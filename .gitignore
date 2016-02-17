@@ -31,6 +31,6 @@ proguard/
 .navigation/
 
 *.iws
-.idea/
+/.idea/
 *.iml
 
