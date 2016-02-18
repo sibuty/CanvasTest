@@ -3,87 +3,115 @@ package com.example.igor.canvastest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PathEffect;
-import android.graphics.RectF;
+import android.graphics.PointF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Igor on 17.02.2016.
  */
-public class CanvasLayout extends FrameLayout {
+public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
+
+    List<Shape> shapes = new ArrayList<>();
 
     public CanvasLayout(Context context) {
         super(context);
-        setWillNotDraw(false);
+        initView();
     }
 
     public CanvasLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setWillNotDraw(false);
+        initView();
     }
 
     public CanvasLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setWillNotDraw(false);
+        initView();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public CanvasLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        setWillNotDraw(false);
+        initView();
     }
+
+    protected void initView() {
+        setWillNotDraw(false);
+        setOnTouchListener(this);
+    }
+    /*
+
+    float x0 = 550;
+    float y0 = 550;
+
+    float x1 = 1000;
+    float y1 = 200;
+    float t = 0;
+
+    Shape arrow = new ArrowShape(new PointF(x0, y0), new PointF(x1, y1));
+    PointF point = new PointF(x0, y0);*/
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Paint paint = new Paint();
-        paint.setColor(Color.rgb(0, 255, 0));
-        paint.setAntiAlias(true);
-        paint.setFilterBitmap(true);
-        paint.setDither(true);
-        paint.setStrokeWidth(10);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeJoin(Paint.Join.MITER);
-
-        canvas.drawRoundRect(new RectF(200, 200, 500, 500), 6, 6, paint);
-
-        Path path = new Path();
-        float x0 = 550;
-        float y0 = 550;
-
-        float x1 = 1000;
-        float y1 = 200;
-
-        float size = (float) Math.sqrt(Math.pow(x1-x0, 2) + Math.pow(y1-y0, 2));
-        float h = size * 0.2f;
-
-        float arrowMiddleX = (9*x1 + x0)/10;
-        float arrowMiddleY = (9*y1 + y0)/10;
-
-        double angle = Math.toRadians(180) - Math.atan2(x0-x1, y1-y0);
-        double angleOffset = Math.toRadians(65);
-
-        float arrowLeftX = (float) (Math.sin(angle - angleOffset) * h) + arrowMiddleX;
-        float arrowLeftY = (float) (Math.cos(angle - angleOffset) * h) + arrowMiddleY;
-
-        float arrowRightX = (float) (Math.sin(angle + angleOffset) * h) + arrowMiddleX;
-        float arrowRightY = (float) (Math.cos(angle + angleOffset) * h) + arrowMiddleY;
-
-        path.moveTo(x0, x0);
-        path.lineTo(x1, y1);
-        Path path1 = new Path();
-        path1.moveTo(arrowLeftX, arrowLeftY);
-        path1.lineTo(x1, y1);
-        path1.lineTo(arrowRightX, arrowRightY);
-        path.addPath(path1);
-        canvas.drawPath(path, paint);
-
+        for (int i = 0; i < shapes.size(); i++) {
+            shapes.get(i).draw(canvas);
+        }
+/*
+        t += 0.01;
+        x0 = (float) (300 + Math.sin(t) * 300);
+        y0 = (float) (400 + Math.cos(t) * 300);
+        point.x = x0;
+        point.y = y0;
+        arrow.setShapePoint(0, point);
+        arrow.draw(canvas);*/
         postInvalidate();
+    }
+
+    protected void addShape(final Shape shape) {
+        for (int i = 0; i < shape.getShapePointsCount(); i++) {
+            PointF point = shape.getShapePoint(i);
+            ToolHandleView toolHandleView = new ToolHandleView(getContext());
+            toolHandleView.setX(point.x);
+            toolHandleView.setY(point.y);
+            final int finalI = i;
+            toolHandleView.setPositionListener(new PositionListener() {
+                @Override
+                public void onPositionChanged(PointF pointF) {
+                    shape.setShapePoint(finalI, pointF);
+                }
+            });
+            addView(toolHandleView);
+        }
+        shapes.add(shape);
+    }
+
+    @Override
+    public boolean onTouch(final View v, final MotionEvent event) {
+        for (int i = 0; i < shapes.size(); i++) {
+            Shape shape = shapes.get(i);
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    shape.enableMove(true);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    Paint paint = shape.getPaint();
+                    if (shape.canMove() && shape.checkCircle(event.getX(), event.getY())) {
+
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    shape.enableMove(false);
+                    break;
+            }
+        }
+        return true;
     }
 }

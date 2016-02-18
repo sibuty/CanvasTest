@@ -1,8 +1,8 @@
 package com.example.igor.canvastest;
 
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.PointF;
 import android.os.Bundle;
-import android.view.ViewGroup;
+import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -10,5 +10,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        CanvasLayout canvasLayout = (CanvasLayout) findViewById(R.id.main_layout);
+        Shape shape = new ArrowShape(new PointF(200,200), new PointF(100, 100));
+
+        canvasLayout.addShape(shape);
     }
 }
