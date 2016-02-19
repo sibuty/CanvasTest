@@ -157,7 +157,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             Shape shape = shapes.get(i);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (shape.checkCircle(event.getX(), event.getY())) {
+                    if (shape.checkCircle(event.getX(), event.getY(), 20.0F)) {
                         shape.enableMove(true);
                         shape.enableSelect(true);
                         moveShapePoint.set(event.getX(), event.getY());

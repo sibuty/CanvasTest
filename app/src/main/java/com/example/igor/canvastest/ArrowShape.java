@@ -114,7 +114,7 @@ public class ArrowShape implements Shape {
     }
 
     @Override
-    public boolean checkCircle(float xC, float yC) {
+    public boolean checkCircle(float xC, float yC, float r) {
         PointF start = points[0];
         PointF end = points[1];
         float x0 = start.x;
@@ -132,7 +132,7 @@ public class ArrowShape implements Shape {
 
         final float a = dx * dx + dy * dy;
         final float b = 2.0F * (_x1 * dx + _y1 * dy);
-        final float c = _x1 * _x1 + _y1 * _y1 - 225.0F;
+        final float c = _x1 * _x1 + _y1 * _y1 - (float) Math.pow((double) r, 2.0);
 
         if (-b < 0.0F) {
             return c < 0.0F;

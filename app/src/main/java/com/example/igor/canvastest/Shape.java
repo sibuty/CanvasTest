@@ -28,7 +28,7 @@ public interface Shape {
 
     void reset();
 
-    boolean checkCircle(float xC, float yC);
+    boolean checkCircle(float xC, float yC, float r);
 
     boolean canMove();
 
