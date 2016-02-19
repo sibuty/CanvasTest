@@ -3,7 +3,6 @@ package com.example.igor.canvastest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.PointF;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -19,7 +18,8 @@ import java.util.List;
  */
 public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
 
-    List<Shape> shapes = new ArrayList<>();
+    private List<Shape> shapes = new ArrayList<>();
+    private PointF moveShapePoint = new PointF();
 
     public CanvasLayout(Context context) {
         super(context);
@@ -89,8 +89,66 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 }
             });
             addView(toolHandleView);
+            shape.getHandlers().add(toolHandleView);
         }
         shapes.add(shape);
+    }
+
+    public void ensureBounds(List<View> handlers, PointF delta) {
+        float minX = handlers.get(0).getX();
+        float minY = handlers.get(0).getY();
+        float maxX = handlers.get(0).getX();
+        float maxY = handlers.get(0).getY();
+        for (View view : handlers) {
+            float x = view.getX();
+            float y = view.getY();
+            float widht = (float) view.getWidth();
+            float height = (float) view.getHeight();
+            if (x < minX) {
+                minX = x;
+            }
+            if (x + widht > maxX) {
+                maxX = x + widht;
+            }
+            if (y < minY) {
+                minY = y;
+            }
+            if (y + height > maxY) {
+                maxY = y + height;
+            }
+        }
+
+        minX = minX + delta.x;
+        maxX = maxX + delta.x;
+        minY = minY + delta.y;
+        maxY = maxY + delta.y;
+
+        float dx = 0.0F;
+
+        if (minX < 0.0F) {
+            dx = -minX;
+        } else if (maxX > (float) getWidth()) {
+            dx = (float) getWidth() - maxX;
+        } else {
+            dx = delta.x;
+        }
+
+        float dy = 0.0F;
+
+        if (minY < 0.0F) {
+            dy = -minY;
+        } else if (maxY > (float) getHeight()) {
+            dy = (float) getHeight() - maxY;
+        } else {
+            dy = delta.y;
+        }
+
+        for (View view : handlers) {
+            if (view instanceof ToolHandleView) {
+                ToolHandleView toolHandleView = (ToolHandleView) view;
+                toolHandleView.move(new PointF(dx, dy));
+            }
+        }
     }
 
     @Override
@@ -99,12 +157,19 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             Shape shape = shapes.get(i);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    shape.enableMove(true);
+                    if (shape.checkCircle(event.getX(), event.getY())) {
+                        shape.enableMove(true);
+                        shape.enableSelect(true);
+                        moveShapePoint.set(event.getX(), event.getY());
+                    } else {
+                        shape.enableSelect(false);
+                    }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    Paint paint = shape.getPaint();
-                    if (shape.canMove() && shape.checkCircle(event.getX(), event.getY())) {
-
+                    if (shape.canMove()) {
+                        ensureBounds(shape.getHandlers(),
+                                new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
+                        moveShapePoint.set(event.getX(), event.getY());
                     }
                     break;
                 case MotionEvent.ACTION_UP:

@@ -57,17 +57,8 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 float x = event.getRawX();
                 float y = event.getRawY();
-                if (x > bounds.left && x < bounds.right) {
-                    view.setTranslationX(x - offset.x) ;
-                }
-                if (y > bounds.top && y < bounds.bottom) {
-                    view.setTranslationY(y - offset.y);
-                }
-                if (positionListener != null) {
-                    positionListener.onPositionChanged(new PointF(view.getTranslationX() + view.getWidth()/2, view.getTranslationY() + view.getHeight()/2));
-                }
+                checkPositionAndChanged(x, y);
                 break;
-
             case MotionEvent.ACTION_DOWN:
                 coords = new int[2];
                 ((View) view.getParent()).getLocationOnScreen(coords);
@@ -76,10 +67,25 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
                 bounds.left = event.getX() + coords[0];
                 bounds.top = event.getY() + coords[1];
                 bounds.right = (float) (((View) getParent()).getWidth() - view.getWidth()) + event.getX() + coords[0];
-                bounds.bottom = (float) (((View) getParent()).getHeight() - view.getHeight()) + event.getY() + coords[1];
+                bounds.bottom =
+                        (float) (((View) getParent()).getHeight() - view.getHeight()) + event.getY() + coords[1];
                 break;
         }
         return true;
+    }
+
+    public void ensureBounds() {
+        View parent = (View) getParent();
+        if (getX() < 0.0F) {
+            setX(0.0F);
+        } else if (getX() + (float) getWidth() > (float) parent.getWidth()) {
+            setX((float) (parent.getWidth() - getWidth()));
+        }
+        if (getY() < 0.0F) {
+            setY(0.0F);
+        } else if (getY() + (float) getHeight() > (float) parent.getHeight()) {
+            setY((float) (parent.getHeight() - getHeight()));
+        }
     }
 
     public void setPositionListener(final PositionListener positionListener) {
@@ -89,7 +95,32 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        startPoint.set(getTranslationX() + (float) (getWidth() / 2), getTranslationY() + (float) (getHeight() / 2));
-        positionListener.onPositionChanged(startPoint);
+        onPositionChanged();
+    }
+
+    public void checkPositionAndChanged(float x, float y) {
+        if (x > bounds.left && x < bounds.right) {
+            setTranslationX(x - offset.x);
+        }
+        if (y > bounds.top && y < bounds.bottom) {
+            setTranslationY(y - offset.y);
+        }
+        onPositionChanged();
+    }
+
+    public void onPositionChanged() {
+        if (positionListener != null) {
+            startPoint.set(getTranslationX() + (float) (getWidth() / 2), getTranslationY() + (float) (getHeight() / 2));
+            positionListener.onPositionChanged(startPoint);
+        }
+    }
+
+    public void move(PointF delta) {
+        float x = getTranslationX() + delta.x;
+        float y = getTranslationY() + delta.y;
+        setX(x);
+        setY(y);
+        ensureBounds();
+        onPositionChanged();
     }
 }

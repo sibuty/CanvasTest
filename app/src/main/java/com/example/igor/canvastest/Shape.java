@@ -3,6 +3,9 @@ package com.example.igor.canvastest;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.view.View;
+
+import java.util.List;
 
 /**
  * Created by glotemz on 18.02.16.
@@ -30,4 +33,8 @@ public interface Shape {
     boolean canMove();
 
     void enableMove(boolean enable);
+
+    List<View> getHandlers();
+
+    void enableSelect(boolean enable);
 }
