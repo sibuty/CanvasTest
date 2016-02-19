@@ -126,9 +126,9 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         float dx = 0.0F;
 
         if (minX < 0.0F) {
-            dx = -minX;
+            dx = delta.x - minX;
         } else if (maxX > (float) getWidth()) {
-            dx = (float) getWidth() - maxX;
+            dx = (float) getWidth() - maxX + delta.x;
         } else {
             dx = delta.x;
         }
@@ -136,9 +136,9 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         float dy = 0.0F;
 
         if (minY < 0.0F) {
-            dy = -minY;
+            dy = delta.y - minY;
         } else if (maxY > (float) getHeight()) {
-            dy = (float) getHeight() - maxY;
+            dy = (float) getHeight() - maxY + delta.y;
         } else {
             dy = delta.y;
         }
