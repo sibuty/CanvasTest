@@ -3,7 +3,6 @@ package com.example.igor.canvastest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.PointF;
-import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -18,7 +17,7 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
 
     private int[] coords = null;
     private PointF offset = new PointF();
-    private RectF bounds = new RectF();
+    //private RectF bounds = new RectF();
     private PositionListener positionListener;
     private PointF startPoint = new PointF();
 
@@ -57,18 +56,21 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 float x = event.getRawX();
                 float y = event.getRawY();
-                checkPositionAndChanged(x, y);
+                setTranslationX(x - offset.x);
+                setTranslationY(y - offset.y);
+                ensureBounds();
+                onPositionChanged();
                 break;
             case MotionEvent.ACTION_DOWN:
                 coords = new int[2];
                 ((View) view.getParent()).getLocationOnScreen(coords);
                 offset.x = event.getX() + (float) getLeft() + coords[0];
                 offset.y = event.getY() + (float) getTop() + coords[1];
-                bounds.left = event.getX() + coords[0];
+                /*bounds.left = event.getX() + coords[0];
                 bounds.top = event.getY() + coords[1];
                 bounds.right = (float) (((View) getParent()).getWidth() - view.getWidth()) + event.getX() + coords[0];
                 bounds.bottom =
-                        (float) (((View) getParent()).getHeight() - view.getHeight()) + event.getY() + coords[1];
+                        (float) (((View) getParent()).getHeight() - view.getHeight()) + event.getY() + coords[1];*/
                 break;
         }
         return true;
@@ -95,16 +97,6 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        onPositionChanged();
-    }
-
-    public void checkPositionAndChanged(float x, float y) {
-        if (x > bounds.left && x < bounds.right) {
-            setTranslationX(x - offset.x);
-        }
-        if (y > bounds.top && y < bounds.bottom) {
-            setTranslationY(y - offset.y);
-        }
         onPositionChanged();
     }
 
