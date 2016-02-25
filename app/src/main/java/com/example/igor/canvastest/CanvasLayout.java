@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
 
-    private List<Shape> shapes = new ArrayList<>();
+    private List<AbstractShape> shapes = new ArrayList<>();
     private PointF moveShapePoint = new PointF();
 
     public CanvasLayout(Context context) {
@@ -75,7 +75,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         postInvalidate();
     }
 
-    protected void addShape(final Shape shape) {
+    protected void addShape(final AbstractShape shape) {
         for (int i = 0; i < shape.getShapePointsCount(); i++) {
             PointF point = shape.getShapePoint(i);
             ToolHandleView toolHandleView = new ToolHandleView(getContext());
@@ -154,10 +154,10 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
         for (int i = 0; i < shapes.size(); i++) {
-            Shape shape = shapes.get(i);
+            AbstractShape shape = shapes.get(i);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (shape.checkCircle(event.getX(), event.getY(), 20.0F)) {
+                    if (shape.onShape(event.getX(), event.getY(), 20.0F)) {
                         shape.enableMove(true);
                         shape.enableSelect(true);
                         moveShapePoint.set(event.getX(), event.getY());

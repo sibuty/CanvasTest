@@ -102,7 +102,8 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
 
     public void onPositionChanged() {
         if (positionListener != null) {
-            startPoint.set(getTranslationX() + (float) (getWidth() / 2), getTranslationY() + (float) (getHeight() / 2));
+            startPoint.set(getTranslationX() + (float) (getWidth() / 2), getTranslationY()
+                    + (float) (getHeight() / 2));
             positionListener.onPositionChanged(startPoint);
         }
     }

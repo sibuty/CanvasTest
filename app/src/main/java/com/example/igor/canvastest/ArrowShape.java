@@ -9,9 +9,8 @@ import java.util.List;
 /**
  * Created by glotemz on 18.02.16.
  */
-public class ArrowShape implements Shape {
+public class ArrowShape extends AbstractShape {
 
-    private static final int COUNT_POINTS = 2;
     private static final double ANGLE_OFFSET = Math.toRadians(45.0);
     private ArrayList<View> handlers = new ArrayList<>();
     private Paint paint = new Paint();
@@ -21,13 +20,9 @@ public class ArrowShape implements Shape {
     private boolean canMove = false;
     private PointF[] points;
 
-    public ArrowShape() {
-        this.points = new PointF[COUNT_POINTS];
-        initPaint();
-    }
-
     public ArrowShape(PointF start, PointF end) {
-        this.points = new PointF[COUNT_POINTS];
+        pointsCount = 2;
+        this.points = new PointF[pointsCount];
         points[0] = start;
         points[1] = end;
         initPaint();
@@ -77,34 +72,19 @@ public class ArrowShape implements Shape {
 
     @Override
     public PointF getShapePoint(final int index) {
-        return index >= 0 && index < COUNT_POINTS ? points[index] : null;
+        return index >= 0 && index < pointsCount ? points[index] : null;
     }
 
     @Override
     public void setShapePoint(final int index, final PointF value) {
-        if (index >= 0 && index < COUNT_POINTS) {
+        if (index >= 0 && index < pointsCount) {
             points[index] = value;
         }
     }
 
     @Override
-    public PointF[] getShapePoints() {
-        return points;
-    }
-
-    @Override
     public int getShapePointsCount() {
         return points != null ? points.length : 0;
-    }
-
-    @Override
-    public void setPaint(final Paint paint) {
-        this.paint = paint;
-    }
-
-    @Override
-    public Paint getPaint() {
-        return paint;
     }
 
     @Override
@@ -114,7 +94,7 @@ public class ArrowShape implements Shape {
     }
 
     @Override
-    public boolean checkCircle(float xC, float yC, float r) {
+    public boolean onShape(float xC, float yC, float r) {
         PointF start = points[0];
         PointF end = points[1];
         float x0 = start.x;
