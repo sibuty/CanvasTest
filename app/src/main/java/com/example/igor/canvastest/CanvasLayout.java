@@ -78,18 +78,20 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     protected void addShape(final AbstractShape shape) {
         for (int i = 0; i < shape.getHandlersCount(); i++) {
             PointF point = shape.getShapePoint(i);
-            ToolHandleView toolHandleView = new ToolHandleView(getContext());
-            toolHandleView.setX(point.x);
-            toolHandleView.setY(point.y);
-            final int finalI = i;
-            toolHandleView.setPositionListener(new PositionListener() {
-                @Override
-                public void onPositionChanged(PointF pointF) {
-                    shape.setShapePoint(finalI, pointF);
-                }
-            });
-            addView(toolHandleView);
-            shape.getHandlers().add(toolHandleView);
+            if(point != null) {
+                ToolHandleView toolHandleView = new ToolHandleView(getContext());
+                toolHandleView.setX(point.x);
+                toolHandleView.setY(point.y);
+                final int finalI = i;
+                toolHandleView.setPositionListener(new PositionListener() {
+                    @Override
+                    public void onPositionChanged(PointF pointF) {
+                        shape.setShapePoint(finalI, pointF);
+                    }
+                });
+                addView(toolHandleView);
+                shape.getHandlers().add(toolHandleView);
+            }
         }
         shapes.add(shape);
     }
