@@ -23,7 +23,6 @@ public class RectangleShape extends AbstractShape {
     private int strokeWidth;
 
     public RectangleShape(PointF start, PointF end) {
-        pointsCount = 2;
         this.top = start;
         this.end = end;
         initPaint();
@@ -45,7 +44,6 @@ public class RectangleShape extends AbstractShape {
         canvas.drawRect(end.x, end.y, top.x, top.y, paint);
     }
 
-    // TODO: 25.02.16 consider NOT using pointf arrays as non-informative?
     @Override
     public PointF getShapePoint(final int index) {
         switch (index) {
@@ -71,13 +69,14 @@ public class RectangleShape extends AbstractShape {
     }
 
     @Override
-    public int getShapePointsCount() {
-        return pointsCount;
+    public int getHandlersCount() {
+        return 4;
     }
 
     @Override
     public boolean onShape(float xC, float yC, float r) {
         //Игорь пиши комментарии, будь мужиком блеать
+        //Акей))00
         //        PointF top = points[0];
         //        PointF end = points[1];
         //        float x0 = top.x;
