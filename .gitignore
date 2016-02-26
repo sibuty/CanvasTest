@@ -38,7 +38,6 @@ proguard/
 /.idea/libraries
 .DS_Store
 /captures
-.idea
 *.classpath
 *.project
 hs_err_pid*
