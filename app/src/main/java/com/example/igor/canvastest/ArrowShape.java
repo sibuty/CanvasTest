@@ -12,19 +12,18 @@ import java.util.List;
 public class ArrowShape extends AbstractShape {
 
     private static final double ANGLE_OFFSET = Math.toRadians(45.0);
+    private PointF start;
+    private PointF end;
     private ArrayList<View> handlers = new ArrayList<>();
     private Paint paint = new Paint();
     private Path arrowPath = new Path();
     private Path barbsPath = new Path();
     private ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
     private boolean canMove = false;
-    private PointF[] points;
 
     public ArrowShape(PointF start, PointF end) {
-        pointsCount = 2;
-        this.points = new PointF[pointsCount];
-        points[0] = start;
-        points[1] = end;
+        this.start = start;
+        this.end = end;
         initPaint();
     }
 
@@ -41,8 +40,7 @@ public class ArrowShape extends AbstractShape {
     @Override
     public void draw(final Canvas canvas) {
         reset();
-        PointF start = points[0];
-        PointF end = points[1];
+
         float x0 = start.x;
         float y0 = start.y;
         float x = end.x;
@@ -72,19 +70,31 @@ public class ArrowShape extends AbstractShape {
 
     @Override
     public PointF getShapePoint(final int index) {
-        return index >= 0 && index < pointsCount ? points[index] : null;
-    }
-
-    @Override
-    public void setShapePoint(final int index, final PointF value) {
-        if (index >= 0 && index < pointsCount) {
-            points[index] = value;
+        switch (index) {
+            case 0:
+                return start;
+            case 1:
+                return end;
+            default:
+                return null;
         }
     }
 
     @Override
-    public int getShapePointsCount() {
-        return points != null ? points.length : 0;
+    public void setShapePoint(final int index, final PointF value) {
+        switch (index) {
+            case 0:
+                this.start = value;
+                break;
+            case 1:
+                this.end = value;
+                break;
+        }
+    }
+
+    @Override
+    public int getHandlersCount() {
+        return 2;
     }
 
     @Override
@@ -95,12 +105,10 @@ public class ArrowShape extends AbstractShape {
 
     @Override
     public boolean onShape(float xC, float yC, float r) {
-        PointF start = points[0];
-        PointF end = points[1];
-        float x0 = start.x;
-        float y0 = start.y;
-        float x = end.x;
-        float y = end.y;
+        float x0 = this.start.x;
+        float y0 = this.start.y;
+        float x = this.end.x;
+        float y = this.end.y;
 
         final float _x1 = x0 - xC;
         final float _x2 = x - xC;
