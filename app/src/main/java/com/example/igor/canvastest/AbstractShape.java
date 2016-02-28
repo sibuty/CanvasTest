@@ -21,7 +21,11 @@ public abstract class AbstractShape {
 
     public void reset() {}
 
-    /** True if specified coords are on the shape */
+    /**
+     * True if xC, yC are on the shape
+     *
+     * @param r finger radius to add into touchable area near the shape
+     */
     public abstract boolean onShape(float xC, float yC, float r);
 
     public abstract boolean canMove();
