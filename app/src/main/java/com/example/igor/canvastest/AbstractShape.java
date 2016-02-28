@@ -15,6 +15,7 @@ public abstract class AbstractShape {
 
     public abstract PointF getShapePoint(int index);
 
+    /** Used for resizing */
     public abstract void setShapePoint(int index, PointF value);
 
     public abstract int getHandlersCount();
@@ -35,4 +36,9 @@ public abstract class AbstractShape {
     public abstract List<View> getHandlers();
 
     public abstract void enableSelect(boolean enable);
+
+    /** @return true if near comes closer to far at least on r px */
+    protected boolean pointOverlaps(PointF near, PointF far, double r) {
+        return (far.x - near.x <= r) && (far.y - near.y <= r);
+    }
 }

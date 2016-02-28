@@ -56,11 +56,19 @@ public class RectangleShape extends AbstractShape {
 
     @Override
     public void setShapePoint(final int index, final PointF value) {
+        float rBetween = 10;
         switch (index) {
             case 0:
+                /* Protecting handlers from overlapping */
+//                if (pointOverlaps(value, end, rBetween)) {
+//                    break;
+//                }
                 start = value;
                 break;
             case 1:
+//                if (pointOverlaps(value, start, rBetween)) {
+//                    break;
+//                }
                 end = value;
                 break;
         }
