@@ -3,6 +3,7 @@ package com.example.igor.canvastest;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public abstract class AbstractShape {
 
     public abstract void draw(Canvas canvas);
 
+    @Nullable
     public abstract PointF getShapePoint(int index);
 
     /** Used for resizing */
