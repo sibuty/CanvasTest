@@ -14,8 +14,12 @@ import android.graphics.PointF;
 public class TextShape extends AbstractShape {
 
     private PointF base;
+    private String text = "kajfasdfa";
+    private Paint bgRectPaint;
 
     public TextShape(PointF base) {
+        super();
+        bgRectPaint = new Paint();
         this.base = base;
     }
 
@@ -25,10 +29,15 @@ public class TextShape extends AbstractShape {
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         paint.setDither(true);
-        paint.setStrokeWidth(2);
+        paint.setStrokeWidth(1);
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setTextSize(60);
+        //todo add screen density deps
+        paint.setTextSize(40);
+
+//        bgRectPaint.setColor(Color.WHITE);
+//        bgRectPaint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(1);
     }
 
     @Override
@@ -37,7 +46,10 @@ public class TextShape extends AbstractShape {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawText("ozozoz",base.x,base.y,paint);
+        canvas.drawText(text, base.x, base.y, paint);
+
+        float textWidth = paint.measureText(text);
+
     }
 
     @Override
