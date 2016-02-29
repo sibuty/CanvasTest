@@ -15,7 +15,6 @@ public class ArrowShape extends AbstractShape {
     private static final double ANGLE_OFFSET = Math.toRadians(45.0);
     private PointF start;
     private PointF end;
-    private Paint paint = new Paint();
     private Path arrowPath = new Path();
     private Path barbsPath = new Path();
 
