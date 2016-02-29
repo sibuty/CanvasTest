@@ -1,9 +1,6 @@
 package com.example.igor.canvastest;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PointF;
+import android.graphics.*;
 
 /**
  * Created by Igor on 29.02.2016.
@@ -14,6 +11,7 @@ public class OvalShape extends RectangleShape {
         super(start, end);
     }
 
+    @Override
     public void initPaint() {
         paint.setColor(Color.rgb(255, 0, 0));
         paint.setAntiAlias(true);
@@ -25,6 +23,15 @@ public class OvalShape extends RectangleShape {
 
     @Override
     public void draw(final Canvas canvas) {
+        if(this.selected) {
+            paint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
+            paint.setColor(Color.rgb(155, 155, 155));
+            paint.setStrokeWidth(5);
+            canvas.drawRect(rect, paint);
+        }
+        paint.setStrokeWidth(10);
+        paint.setColor(Color.rgb(255, 0, 0));
+        paint.setPathEffect(null);
         canvas.drawOval(rect, paint);
     }
 

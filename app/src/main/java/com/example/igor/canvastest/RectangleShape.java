@@ -156,6 +156,7 @@ public class RectangleShape extends AbstractShape {
 
     @Override
     public void enableSelect(final boolean enable) {
+        this.selected = enable;
         for (View view : handlers) {
             view.setVisibility(enable ? View.VISIBLE : View.GONE);
         }

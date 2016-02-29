@@ -11,6 +11,8 @@ import java.util.List;
  */
 public abstract class AbstractShape {
 
+    protected boolean selected = false;
+
     public abstract void draw(Canvas canvas);
 
     public abstract PointF getShapePoint(int index);
