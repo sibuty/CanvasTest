@@ -1,19 +1,21 @@
 package com.example.igor.canvastest;
 
+import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Build;
 import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by serge on 25.02.16.
+ * Created by Igor on 29.02.2016.
  */
-public class RectangleShape extends AbstractShape {
+public class OvalShape extends AbstractShape {
 
     private ArrayList<View> handlers = new ArrayList<>();
     private Paint paint = new Paint();
@@ -25,7 +27,7 @@ public class RectangleShape extends AbstractShape {
     private PointF left;
     private PointF right;
 
-    public RectangleShape(PointF start, PointF end) {
+    public OvalShape(PointF start, PointF end) {
         this.rect = new RectF();
         this.start = start;
         this.end = end;
@@ -42,12 +44,11 @@ public class RectangleShape extends AbstractShape {
         paint.setDither(true);
         paint.setStrokeWidth(10);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeJoin(Paint.Join.ROUND);
     }
 
     @Override
     public void draw(final Canvas canvas) {
-        canvas.drawRect(rect, paint);
+        canvas.drawOval(rect, paint);
     }
 
     @Override

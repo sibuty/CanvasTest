@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PointF;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -17,6 +18,8 @@ import java.util.List;
  * Created by Igor on 17.02.2016.
  */
 public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
+
+    private AbstractShape target = null;
 
     private List<AbstractShape> shapes = new ArrayList<>();
     private PointF moveShapePoint = new PointF();
@@ -61,7 +64,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        for (int i = 0; i < shapes.size(); i++) {
+        for (int i = shapes.size() - 1; i >= 0; i--) {
             shapes.get(i).draw(canvas);
         }
 /*
@@ -78,7 +81,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     protected void addShape(final AbstractShape shape) {
         for (int i = 0; i < shape.getHandlersCount(); i++) {
             PointF point = shape.getShapePoint(i);
-            if(point != null) {
+            if (point != null) {
                 ToolHandleView toolHandleView = new ToolHandleView(getContext());
                 toolHandleView.setX(point.x);
                 toolHandleView.setY(point.y);
@@ -159,23 +162,39 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             AbstractShape shape = shapes.get(i);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (shape.onShape(event.getX(), event.getY(), 20.0F)) {
-                        shape.enableMove(true);
-                        shape.enableSelect(true);
-                        moveShapePoint.set(event.getX(), event.getY());
+                    if (target == null) {
+                        if (shape.onShape(event.getX(), event.getY(), 20.0F)) {
+                            target = shape;
+                            shapes.add(0, target);
+                            shapes.remove(i + 1);
+                            target.enableMove(true);
+                            target.enableSelect(true);
+                            moveShapePoint.set(event.getX(), event.getY());
+                        } else if (target != shape) {
+                            shape.enableSelect(false);
+                        }
                     } else {
-                        shape.enableSelect(false);
+                        if (target.onShape(event.getX(), event.getY(), 20.0F)) {
+                            target.enableMove(true);
+                            target.enableSelect(true);
+                            moveShapePoint.set(event.getX(), event.getY());
+                        } else {
+                            target.enableSelect(false);
+                            target = null;
+                        }
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (shape.canMove()) {
-                        ensureBounds(shape.getHandlers(),
+                    if (target != null && target.canMove()) {
+                        ensureBounds(target.getHandlers(),
                                 new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
                         moveShapePoint.set(event.getX(), event.getY());
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-                    shape.enableMove(false);
+                    if (target != null) {
+                        target.enableMove(false);
+                    }
                     break;
             }
         }

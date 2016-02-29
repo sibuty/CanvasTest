@@ -108,6 +108,11 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
         }
     }
 
+    public void setPlace(PointF place) {
+        setX(place.x - (float) (getWidth() / 2));
+        setY(place.y - (float) (getHeight() / 2));
+    }
+
     public void move(PointF delta) {
         float x = getTranslationX() + delta.x;
         float y = getTranslationY() + delta.y;

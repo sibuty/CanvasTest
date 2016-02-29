@@ -14,8 +14,11 @@ public class MainActivity extends AppCompatActivity {
         AbstractShape arrowShape = new ArrowShape(new PointF(200,200), new PointF(100, 100));
         AbstractShape rectangleShape =
                 new RectangleShape(new PointF(200, 200), new PointF(400, 400));
+        AbstractShape ovalShape =
+                new OvalShape(new PointF(300, 300), new PointF(600, 400));
 
         canvasLayout.addShape(arrowShape);
         canvasLayout.addShape(rectangleShape);
+        canvasLayout.addShape(ovalShape);
     }
 }
