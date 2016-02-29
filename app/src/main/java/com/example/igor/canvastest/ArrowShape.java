@@ -4,7 +4,6 @@ import android.graphics.*;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by glotemz on 18.02.16.
@@ -161,25 +160,10 @@ public class ArrowShape extends AbstractShape {
     }*/
 
     @Override
-    public List<View> getHandlers() {
-        return handlers;
-    }
-
-    @Override
     public void enableSelect(final boolean enable) {
         this.selected = enable;
         for (View view : handlers) {
             view.setVisibility(enable ? View.VISIBLE : View.GONE);
         }
-    }
-
-    @Override
-    public boolean canMove() {
-        return canMove;
-    }
-
-    @Override
-    public void enableMove(final boolean enable) {
-        this.canMove = enable;
     }
 }

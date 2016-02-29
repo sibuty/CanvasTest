@@ -7,18 +7,11 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by serge on 25.02.16.
  */
 public class RectangleShape extends AbstractShape {
 
-    protected ArrayList<View> handlers = new ArrayList<>();
-    protected Paint paint = new Paint();
-    protected ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
-    protected boolean canMove = false;
     protected RectF rect;
     protected PointF start;
     protected PointF end;
@@ -147,28 +140,5 @@ public class RectangleShape extends AbstractShape {
         boolean inBoundsY = (rect.top - r) <= yC && yC <= (rect.bottom + r);
 
         return inBoundsX && inBoundsY;
-    }
-
-    @Override
-    public List<View> getHandlers() {
-        return handlers;
-    }
-
-    @Override
-    public void enableSelect(final boolean enable) {
-        this.selected = enable;
-        for (View view : handlers) {
-            view.setVisibility(enable ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    @Override
-    public boolean canMove() {
-        return canMove;
-    }
-
-    @Override
-    public void enableMove(final boolean enable) {
-        this.canMove = enable;
     }
 }

@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PointF;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -93,7 +92,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                     }
                 });
                 addView(toolHandleView);
-                shape.getHandlers().add(toolHandleView);
+                shape.handlers.add(toolHandleView);
             }
         }
         shapes.add(shape);
@@ -167,7 +166,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                             target = shape;
                             shapes.add(0, target);
                             shapes.remove(i + 1);
-                            target.enableMove(true);
+                            target.canMove = true;
                             target.enableSelect(true);
                             moveShapePoint.set(event.getX(), event.getY());
                         } else if (target != shape) {
@@ -175,7 +174,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                         }
                     } else {
                         if (target.onShape(event.getX(), event.getY(), 20.0F)) {
-                            target.enableMove(true);
+                            target.canMove = true;
                             target.enableSelect(true);
                             moveShapePoint.set(event.getX(), event.getY());
                         } else {
@@ -185,15 +184,15 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (target != null && target.canMove()) {
-                        ensureBounds(target.getHandlers(),
+                    if (target != null && target.canMove) {
+                        ensureBounds(target.handlers,
                                 new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
                         moveShapePoint.set(event.getX(), event.getY());
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                     if (target != null) {
-                        target.enableMove(false);
+                        target.canMove = false;
                     }
                     break;
             }

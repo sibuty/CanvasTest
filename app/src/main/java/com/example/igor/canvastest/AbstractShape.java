@@ -1,10 +1,11 @@
 package com.example.igor.canvastest;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PointF;
 import android.view.View;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by glotemz on 18.02.16.
@@ -12,6 +13,20 @@ import java.util.List;
 public abstract class AbstractShape {
 
     protected boolean selected = false;
+    protected Paint paint = new Paint();
+    protected ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
+    protected ArrayList<View> handlers = new ArrayList<>();
+
+    public boolean canMove = false;
+
+    public void enableSelect(final boolean enable) {
+        this.selected = enable;
+        for (View view : handlers) {
+            view.setVisibility(enable ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public void reset() {}
 
     public abstract void draw(Canvas canvas);
 
@@ -22,20 +37,10 @@ public abstract class AbstractShape {
 
     public abstract int getHandlersCount();
 
-    public void reset() {}
-
     /**
      * True if xC, yC are on the shape
      *
      * @param r finger radius to add into touchable area near the shape
      */
     public abstract boolean onShape(float xC, float yC, float r);
-
-    public abstract boolean canMove();
-
-    public abstract void enableMove(boolean enable);
-
-    public abstract List<View> getHandlers();
-
-    public abstract void enableSelect(boolean enable);
 }
