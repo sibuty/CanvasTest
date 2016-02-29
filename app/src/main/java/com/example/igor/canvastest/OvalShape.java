@@ -1,12 +1,10 @@
 package com.example.igor.canvastest;
 
-import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.os.Build;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -96,7 +94,7 @@ public class OvalShape extends AbstractShape {
                 break;
         }
         if (!canMove) {
-            updateHandlers();
+            updateHandlersPlaces();
         }
         setRectBounds();
     }
@@ -113,7 +111,7 @@ public class OvalShape extends AbstractShape {
         }
     }
 
-    protected void updateHandlers() {
+    protected void updateHandlersPlaces() {
         for (int i = 0; i < handlers.size(); i++) {
             View handle = handlers.get(i);
             if (handle instanceof ToolHandleView) {

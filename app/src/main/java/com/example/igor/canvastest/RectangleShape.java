@@ -95,7 +95,7 @@ public class RectangleShape extends AbstractShape {
                 break;
         }
         if (!canMove) {
-            updateHandlers();
+            updateHandlersPlaces();
         }
         setRectBounds();
     }
@@ -112,7 +112,7 @@ public class RectangleShape extends AbstractShape {
         }
     }
 
-    protected void updateHandlers() {
+    protected void updateHandlersPlaces() {
         for (int i = 0; i < handlers.size(); i++) {
             View handle = handlers.get(i);
             if (handle instanceof ToolHandleView) {
