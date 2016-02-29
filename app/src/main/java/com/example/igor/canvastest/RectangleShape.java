@@ -15,15 +15,15 @@ import java.util.List;
  */
 public class RectangleShape extends AbstractShape {
 
-    private ArrayList<View> handlers = new ArrayList<>();
-    private Paint paint = new Paint();
-    private ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
-    private boolean canMove = false;
-    private RectF rect;
-    private PointF start;
-    private PointF end;
-    private PointF left;
-    private PointF right;
+    protected ArrayList<View> handlers = new ArrayList<>();
+    protected Paint paint = new Paint();
+    protected ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
+    protected boolean canMove = false;
+    protected RectF rect;
+    protected PointF start;
+    protected PointF end;
+    protected PointF left;
+    protected PointF right;
 
     public RectangleShape(PointF start, PointF end) {
         this.rect = new RectF();
