@@ -16,7 +16,7 @@ public class RectangleShape extends AbstractRectangleShape {
 
     @Override
     public void initPaint() {
-        paint.setColor(Color.rgb(255, 0, 0));
+        paint.setColor(Color.rgb(0, 0, 255));
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         paint.setDither(true);
