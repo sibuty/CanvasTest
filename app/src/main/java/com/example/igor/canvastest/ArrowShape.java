@@ -1,9 +1,11 @@
 package com.example.igor.canvastest;
 
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PointF;
 import android.view.View;
-
-import java.util.ArrayList;
 
 /**
  * Created by glotemz on 18.02.16.
@@ -13,19 +15,17 @@ public class ArrowShape extends AbstractShape {
     private static final double ANGLE_OFFSET = Math.toRadians(45.0);
     private PointF start;
     private PointF end;
-    private ArrayList<View> handlers = new ArrayList<>();
     private Paint paint = new Paint();
     private Path arrowPath = new Path();
     private Path barbsPath = new Path();
-    private ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
-    private boolean canMove = false;
 
     public ArrowShape(PointF start, PointF end) {
+        super();
         this.start = start;
         this.end = end;
-        initPaint();
     }
 
+    @Override
     public void initPaint() {
         paint.setColor(Color.rgb(0, 255, 0));
         paint.setAntiAlias(true);
@@ -130,34 +130,6 @@ public class ArrowShape extends AbstractShape {
 
         return a + b + c < 0.0F;
     }
-
-    /*public void setMovePoint(float xC, float yC, float r) {
-        PointF start = points[0];
-        PointF end = points[1];
-        float x0 = start.x;
-        float y0 = start.y;
-        float x = end.x;
-        float y = end.y;
-
-        final float _x1 = x0 - xC;
-        final float _x2 = x - xC;
-        final float _y1 = y0 - yC;
-        final float _y2 = y - yC;
-
-        float k = (_y2 - _y1) / (_x2 - _x1);
-        float b = _y1 + _x1 * (_y2 - _y1) / (_x2 - _x1);
-
-        double d = Math.pow((double) (4.0F * k * b), 2.0) -
-                4.0 * (Math.pow((double) k, 2.0) + 1.0) * (Math.pow((double) b, 2.0) - Math.pow((double) r, 2.0));
-
-        if (d >= 0.0) {
-            float resultX =
-                    (float) ((Math.sqrt(d) - (double) (2.0F * b * k)) / (2.0 * (Math.pow((double) k, 2.0) + 1.0)));
-            float resultY = k * resultX + b;
-            resultX = resultX + xC;
-            resultY = resultY + yC;
-        }
-    }*/
 
     @Override
     public void enableSelect(final boolean enable) {

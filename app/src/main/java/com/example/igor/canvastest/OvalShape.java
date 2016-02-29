@@ -5,7 +5,7 @@ import android.graphics.*;
 /**
  * Created by Igor on 29.02.2016.
  */
-public class OvalShape extends RectangleShape {
+public class OvalShape extends AbstractRectangleShape {
 
     public OvalShape(PointF start, PointF end) {
         super(start, end);
@@ -33,10 +33,5 @@ public class OvalShape extends RectangleShape {
         paint.setColor(Color.rgb(255, 0, 0));
         paint.setPathEffect(null);
         canvas.drawOval(rect, paint);
-    }
-
-    @Override
-    public int getHandlersCount() {
-        return 4;
     }
 }

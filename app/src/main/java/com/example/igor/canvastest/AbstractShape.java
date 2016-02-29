@@ -13,11 +13,15 @@ import java.util.ArrayList;
 public abstract class AbstractShape {
 
     protected boolean selected = false;
-    protected Paint paint = new Paint();
-    protected ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
-    protected ArrayList<View> handlers = new ArrayList<>();
 
     public boolean canMove = false;
+    public Paint paint = new Paint();
+    public ArrayList<View> handlers = new ArrayList<>();
+    public ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
+
+    public AbstractShape() {
+        initPaint();
+    }
 
     public void enableSelect(final boolean enable) {
         this.selected = enable;
@@ -26,7 +30,7 @@ public abstract class AbstractShape {
         }
     }
 
-    public void reset() {}
+    public abstract void reset();
 
     public abstract void draw(Canvas canvas);
 
@@ -43,4 +47,6 @@ public abstract class AbstractShape {
      * @param r finger radius to add into touchable area near the shape
      */
     public abstract boolean onShape(float xC, float yC, float r);
+
+    protected abstract void initPaint();
 }
