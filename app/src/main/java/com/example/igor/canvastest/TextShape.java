@@ -41,15 +41,32 @@ public class TextShape extends AbstractShape {
     }
 
     @Override
+    public ShapeSnapshot makeSnapshot() {
+        // TODO: 01.03.16 IMPLEMENT
+        return null;
+    }
+
+    @Override
+    public void restoreFromSnapshot(final ShapeSnapshot shapeSnapshot) {
+        // TODO: 01.03.16 IMPLEMENT
+    }
+
+    /**
+     * Must not be implemented
+     *
+     */
+    @Override
+    protected void updateHandlersPlaces() {
+    }
+
+    @Override
     public void reset() {
     }
 
     @Override
     public void draw(Canvas canvas) {
         canvas.drawText(text, base.x, base.y, paint);
-
         float textWidth = paint.measureText(text);
-
     }
 
     @Override

@@ -18,7 +18,6 @@ public abstract class AbstractShape {
     public boolean canMove = false;
     public Paint paint = new Paint();
     public ArrayList<View> handlers = new ArrayList<>();
-    public ArrayList<PointF[]> undoPoints = new ArrayList<PointF[]>();
 
     public AbstractShape() {
         initPaint();
@@ -30,6 +29,8 @@ public abstract class AbstractShape {
             view.setVisibility(enable ? View.VISIBLE : View.GONE);
         }
     }
+
+    protected abstract void updateHandlersPlaces();
 
     public abstract void reset();
 
@@ -51,4 +52,8 @@ public abstract class AbstractShape {
     public abstract boolean onShape(float xC, float yC, float r);
 
     protected abstract void initPaint();
+
+    public abstract ShapeSnapshot makeSnapshot();
+
+    public abstract void restoreFromSnapshot(ShapeSnapshot shapeSnapshot);
 }

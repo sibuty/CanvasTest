@@ -1,12 +1,13 @@
 package com.example.igor.canvastest;
 
+import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.View;
 
 /**
  * Shape based on 2 points start and end
- *
+ * <p/>
  * Created by Sergey Prokofev
  * on 29.02.16
  * sergey.prokofev@altarix.ru
@@ -98,6 +99,7 @@ public abstract class AbstractRectangleShape extends AbstractShape {
         // TODO: 29.02.16 implement
     }
 
+    @Override
     protected void updateHandlersPlaces() {
         for (int i = 0; i < handlers.size(); i++) {
             View handle = handlers.get(i);
@@ -130,6 +132,89 @@ public abstract class AbstractRectangleShape extends AbstractShape {
             rect.set(start.x, end.y, end.x, start.y);
         } else {
             rect.set(end.x, end.y, start.x, start.y);
+        }
+    }
+
+    @Override
+    public ShapeSnapshot makeSnapshot() {
+        return new RectangleShapeSnapShot(
+                new Paint(paint),
+                new PointF(start.x, start.y),
+                new PointF(end.x, end.y),
+                new PointF(left.x, left.y),
+                new PointF(right.x, right.y)
+        );
+    }
+
+    @Override
+    public void restoreFromSnapshot(final ShapeSnapshot shapeSnapshot) {
+        if(shapeSnapshot instanceof RectangleShapeSnapShot) {
+            RectangleShapeSnapShot rectangleShapeSnapShot = (RectangleShapeSnapShot) shapeSnapshot;
+            this.paint = rectangleShapeSnapShot.paint;
+            this.start = rectangleShapeSnapShot.start;
+            this.end = rectangleShapeSnapShot.end;
+            this.left = rectangleShapeSnapShot.left;
+            this.right = rectangleShapeSnapShot.right;
+            this.canMove = true;
+            setRectBounds();
+            updateHandlersPlaces();
+        }
+    }
+
+    public static class RectangleShapeSnapShot implements ShapeSnapshot {
+        private Paint paint;
+        private PointF start;
+        private PointF end;
+        private PointF left;
+        private PointF right;
+
+        public RectangleShapeSnapShot(final Paint paint,
+                                      final PointF start,
+                                      final PointF end,
+                                      final PointF left,
+                                      final PointF right) {
+            this.paint = paint;
+            this.start = start;
+            this.end = end;
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof RectangleShapeSnapShot)) {
+                return false;
+            }
+
+            final RectangleShapeSnapShot that = (RectangleShapeSnapShot) o;
+
+            if (!paint.equals(that.paint)) {
+                return false;
+            }
+            if (!start.equals(that.start)) {
+                return false;
+            }
+            if (!end.equals(that.end)) {
+                return false;
+            }
+            if (!left.equals(that.left)) {
+                return false;
+            }
+            return right.equals(that.right);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = paint.hashCode();
+            result = 31 * result + start.hashCode();
+            result = 31 * result + end.hashCode();
+            result = 31 * result + left.hashCode();
+            result = 31 * result + right.hashCode();
+            return result;
         }
     }
 }

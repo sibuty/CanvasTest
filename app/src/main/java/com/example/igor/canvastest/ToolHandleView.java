@@ -19,6 +19,7 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
     private PointF offset = new PointF();
     //private RectF bounds = new RectF();
     private PositionListener positionListener;
+    private ShapeSnapshotListener shapeSnapshotListener;
     private PointF startPoint = new PointF();
 
     public ToolHandleView(Context context) {
@@ -53,6 +54,9 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
     @Override
     public boolean onTouch(final View view, final MotionEvent event) {
         switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                if(shapeSnapshotListener != null) shapeSnapshotListener.onSnapshotMade();
+                break;
             case MotionEvent.ACTION_MOVE:
                 float x = event.getRawX();
                 float y = event.getRawY();
@@ -92,6 +96,10 @@ public class ToolHandleView extends ImageView implements View.OnTouchListener {
 
     public void setPositionListener(final PositionListener positionListener) {
         this.positionListener = positionListener;
+    }
+
+    public void setShapeSnapshotListener(final ShapeSnapshotListener shapeSnapshotListener) {
+        this.shapeSnapshotListener = shapeSnapshotListener;
     }
 
     @Override

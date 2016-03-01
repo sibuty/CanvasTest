@@ -10,18 +10,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Igor on 17.02.2016.
  */
 public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
 
-    private AbstractShape target = null;
+    protected final Stack<Map.Entry<AbstractShape, ShapeSnapshot>> shapeSnapshotStack =
+            new Stack<Map.Entry<AbstractShape, ShapeSnapshot>>();
+    protected final List<AbstractShape> shapes = new ArrayList<>();
 
-    private List<AbstractShape> shapes = new ArrayList<>();
-    private PointF moveShapePoint = new PointF();
+    protected PointF moveShapePoint = new PointF();
+    protected AbstractShape target = null;
 
     public CanvasLayout(Context context) {
         super(context);
@@ -48,17 +49,16 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         setWillNotDraw(false);
         setOnTouchListener(this);
     }
-    /*
 
-    float x0 = 550;
-    float y0 = 550;
-
-    float x1 = 1000;
-    float y1 = 200;
-    float t = 0;
-
-    Shape arrow = new ArrowShape(new PointF(x0, y0), new PointF(x1, y1));
-    PointF point = new PointF(x0, y0);*/
+    public boolean undo() {
+        if (!shapeSnapshotStack.isEmpty()) {
+            Map.Entry<AbstractShape, ShapeSnapshot> shapeSnapshotEntry = shapeSnapshotStack.pop();
+            shapeSnapshotEntry.getKey().restoreFromSnapshot(shapeSnapshotEntry.getValue());
+            postInvalidate();
+            return true;
+        }
+        return false;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -66,15 +66,6 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         for (int i = shapes.size() - 1; i >= 0; i--) {
             shapes.get(i).draw(canvas);
         }
-/*
-        t += 0.01;
-        x0 = (float) (300 + Math.sin(t) * 300);
-        y0 = (float) (400 + Math.cos(t) * 300);
-        point.x = x0;
-        point.y = y0;
-        arrow.setShapePoint(0, point);
-        arrow.draw(canvas);*/
-        postInvalidate();
     }
 
     protected void addShape(final AbstractShape shape) {
@@ -89,16 +80,24 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                     @Override
                     public void onPositionChanged(PointF pointF) {
                         shape.setShapePoint(finalI, pointF);
+                        CanvasLayout.this.postInvalidate();
+                    }
+                });
+                toolHandleView.setShapeSnapshotListener(new ShapeSnapshotListener() {
+                    @Override
+                    public void onSnapshotMade() {
+                        saveSnapshot(target);
                     }
                 });
                 addView(toolHandleView);
                 shape.handlers.add(toolHandleView);
             }
         }
+        saveSnapshot(shape);
         shapes.add(shape);
     }
 
-    public void ensureBounds(List<View> handlers, PointF delta) {
+    protected void ensureBounds(List<View> handlers, PointF delta) {
         float minX = handlers.get(0).getX();
         float minY = handlers.get(0).getY();
         float maxX = handlers.get(0).getX();
@@ -153,14 +152,31 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 toolHandleView.move(new PointF(dx, dy));
             }
         }
+        CanvasLayout.this.postInvalidate();
+    }
+
+    protected void saveSnapshot(AbstractShape shape) {
+        ShapeSnapshot shapeSnapshot = null;
+        if (!shapeSnapshotStack.isEmpty()) {
+            Map.Entry<AbstractShape, ShapeSnapshot> shapeSnapshotEntry = shapeSnapshotStack.peek();
+            shapeSnapshot = shapeSnapshotEntry.getValue();
+        }
+        if(shape != null) {
+            ShapeSnapshot targetShapeSnapshot = shape.makeSnapshot();
+            if (targetShapeSnapshot != null && !targetShapeSnapshot.equals(shapeSnapshot)) {
+                shapeSnapshotStack.push(new AbstractMap.SimpleEntry<AbstractShape, ShapeSnapshot>(shape,
+                        targetShapeSnapshot));
+
+            }
+        }
     }
 
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
-        for (int i = 0; i < shapes.size(); i++) {
-            AbstractShape shape = shapes.get(i);
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                for (int i = 0; i < shapes.size(); i++) {
+                    AbstractShape shape = shapes.get(i);
                     if (target == null) {
                         if (shape.onShape(event.getX(), event.getY(), 20.0F)) {
                             target = shape;
@@ -182,20 +198,21 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                             target = null;
                         }
                     }
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (target != null && target.canMove) {
-                        ensureBounds(target.handlers,
-                                new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
-                        moveShapePoint.set(event.getX(), event.getY());
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (target != null) {
-                        target.canMove = false;
-                    }
-                    break;
-            }
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (target != null && target.canMove) {
+                    ensureBounds(target.handlers,
+                            new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
+                    moveShapePoint.set(event.getX(), event.getY());
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (target != null) {
+                    target.canMove = false;
+                    saveSnapshot(target);
+                }
+                break;
         }
         return true;
     }

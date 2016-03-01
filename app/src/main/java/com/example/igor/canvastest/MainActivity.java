@@ -6,11 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    private CanvasLayout canvasLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        CanvasLayout canvasLayout = (CanvasLayout) findViewById(R.id.main_layout);
+        canvasLayout =  (CanvasLayout) findViewById(R.id.main_layout);
         AbstractShape arrowShape = new ArrowShape(new PointF(200,200), new PointF(100, 100));
         AbstractShape rectangleShape =
                 new RectangleShape(new PointF(200, 200), new PointF(400, 400));
@@ -22,5 +24,12 @@ public class MainActivity extends AppCompatActivity {
         canvasLayout.addShape(rectangleShape);
         canvasLayout.addShape(ovalShape);
         canvasLayout.addShape(textShape);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!canvasLayout.undo()) {
+            finish();
+        }
     }
 }

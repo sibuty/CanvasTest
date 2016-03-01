@@ -1,10 +1,6 @@
 package com.example.igor.canvastest;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PointF;
+import android.graphics.*;
 import android.view.View;
 
 /**
@@ -33,6 +29,42 @@ public class ArrowShape extends AbstractShape {
         paint.setStrokeWidth(10);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.MITER);
+    }
+
+    @Override
+    protected void updateHandlersPlaces() {
+        for (int i = 0; i < handlers.size(); i++) {
+            View handle = handlers.get(i);
+            if (handle instanceof ToolHandleView) {
+                ToolHandleView toolHandleView = (ToolHandleView) handle;
+                switch (i) {
+                    case 0:
+                        toolHandleView.setPlace(start);
+                        break;
+                    case 1:
+                        toolHandleView.setPlace(end);
+                        break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public ShapeSnapshot makeSnapshot() {
+        return new ArrowShapeSnapShot(
+                new Paint(this.paint),
+                new PointF(this.start.x, this.start.y),
+                new PointF(this.end.x, this.end.y));
+    }
+
+    @Override
+    public void restoreFromSnapshot(final ShapeSnapshot shapeSnapshot) {
+        if (shapeSnapshot instanceof ArrowShapeSnapShot) {
+            ArrowShapeSnapShot rectangleShapeSnapShot = (ArrowShapeSnapShot) shapeSnapshot;
+            this.paint = rectangleShapeSnapShot.paint;
+            this.start = rectangleShapeSnapShot.start;
+            this.end = rectangleShapeSnapShot.end;
+        }
     }
 
     @Override
@@ -135,6 +167,49 @@ public class ArrowShape extends AbstractShape {
         this.selected = enable;
         for (View view : handlers) {
             view.setVisibility(enable ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public static class ArrowShapeSnapShot implements ShapeSnapshot {
+        private Paint paint;
+        private PointF start;
+        private PointF end;
+
+        public ArrowShapeSnapShot(final Paint paint,
+                                  final PointF start,
+                                  final PointF end) {
+            this.paint = paint;
+            this.start = start;
+            this.end = end;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof ArrowShapeSnapShot)) {
+                return false;
+            }
+
+            final ArrowShapeSnapShot that = (ArrowShapeSnapShot) o;
+
+            if (!paint.equals(that.paint)) {
+                return false;
+            }
+            if (!start.equals(that.start)) {
+                return false;
+            }
+            return end.equals(that.end);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = paint.hashCode();
+            result = 31 * result + start.hashCode();
+            result = 31 * result + end.hashCode();
+            return result;
         }
     }
 }
