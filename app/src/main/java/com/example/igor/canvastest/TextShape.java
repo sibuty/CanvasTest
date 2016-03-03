@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
 
 /**
  * Created by Sergey Prokofev
@@ -14,6 +15,7 @@ import android.graphics.PointF;
 public class TextShape extends AbstractShape {
 
     private PointF base;
+    private RectF rect;
     private String text = "kajfasdfa";
     private Paint bgRectPaint;
 
@@ -21,6 +23,7 @@ public class TextShape extends AbstractShape {
         super();
         bgRectPaint = new Paint();
         this.base = base;
+        rect = new RectF(base.x, base.y, base.x + 100, base.y + 100);
     }
 
     @Override
@@ -41,6 +44,24 @@ public class TextShape extends AbstractShape {
     }
 
     @Override
+    public void draw(Canvas canvas) {
+        canvas.drawText(text, base.x, base.y, paint);
+        float textWidth = paint.measureText(text);
+        canvas.drawRect(rect, paint);
+    }
+
+    @Override
+    public boolean onShape(float xC, float yC, float r) {
+        /* Coords are on the shape if they are inside drawn rectangle within finger raduis
+        *
+        * Copied from AbstractRectangleShape */
+        boolean inBoundsX = (rect.left - r) <= xC && xC <= (rect.right + r);
+        boolean inBoundsY = (rect.top - r) <= yC && yC <= (rect.bottom + r);
+
+        return inBoundsX && inBoundsY;
+    }
+
+    @Override
     public ShapeSnapshot makeSnapshot() {
         // TODO: 01.03.16 IMPLEMENT
         return null;
@@ -51,22 +72,12 @@ public class TextShape extends AbstractShape {
         // TODO: 01.03.16 IMPLEMENT
     }
 
-    /**
-     * Must not be implemented
-     *
-     */
     @Override
     protected void updateHandlersPlaces() {
     }
 
     @Override
     public void reset() {
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-        canvas.drawText(text, base.x, base.y, paint);
-        float textWidth = paint.measureText(text);
     }
 
     @Override
@@ -82,10 +93,5 @@ public class TextShape extends AbstractShape {
     @Override
     public int getHandlersCount() {
         return 0;
-    }
-
-    @Override
-    public boolean onShape(float xC, float yC, float r) {
-        return false;
     }
 }

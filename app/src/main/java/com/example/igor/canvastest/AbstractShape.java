@@ -30,6 +30,11 @@ public abstract class AbstractShape {
         }
     }
 
+    /**
+     * Must not be implemented
+     *
+     * Why?
+     */
     protected abstract void updateHandlersPlaces();
 
     public abstract void reset();
@@ -45,7 +50,7 @@ public abstract class AbstractShape {
     public abstract int getHandlersCount();
 
     /**
-     * True if xC, yC are on the shape
+     * True if xC, yC are on the shape. Used to determine whether shape is being touched to move.
      *
      * @param r finger radius to add into touchable area near the shape
      */
