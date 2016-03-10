@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         canvasLayout.addShape(arrowShape);
         canvasLayout.addShape(rectangleShape);
         canvasLayout.addShape(ovalShape);
-//        canvasLayout.addShape(textShape);
+        canvasLayout.addShape(textShape);
     }
 
     @Override

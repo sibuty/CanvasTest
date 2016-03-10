@@ -14,6 +14,8 @@ import java.util.ArrayList;
 public abstract class AbstractShape {
 
     protected boolean selected = false;
+    /** One of the shape points which coordinates should be used to translate the shape */
+    protected PointF basePoint;
 
     public boolean canMove = false;
     public Paint paint = new Paint();
@@ -23,12 +25,7 @@ public abstract class AbstractShape {
         initPaint();
     }
 
-    public void enableSelect(final boolean enable) {
-        this.selected = enable;
-        for (View view : handlers) {
-            view.setVisibility(enable ? View.VISIBLE : View.GONE);
-        }
-    }
+    protected abstract void initPaint();
 
     /**
      * Must not be implemented
@@ -36,6 +33,13 @@ public abstract class AbstractShape {
      * Why?
      */
     protected abstract void updateHandlersPlaces();
+
+    public void enableSelect(final boolean enable) {
+        this.selected = enable;
+        for (View view : handlers) {
+            view.setVisibility(enable ? View.VISIBLE : View.GONE);
+        }
+    }
 
     public abstract void reset();
 
@@ -56,9 +60,10 @@ public abstract class AbstractShape {
      */
     public abstract boolean onShape(float xC, float yC, float r);
 
-    protected abstract void initPaint();
-
     public abstract ShapeSnapshot makeSnapshot();
 
     public abstract void restoreFromSnapshot(ShapeSnapshot shapeSnapshot);
+
+    /** Should be called by event in canvas layout */
+//    public abstract void move();
 }

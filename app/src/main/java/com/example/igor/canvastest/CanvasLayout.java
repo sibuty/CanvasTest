@@ -10,7 +10,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by Igor on 17.02.2016.
@@ -22,7 +26,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     protected final List<AbstractShape> shapes = new ArrayList<>();
 
     protected PointF moveShapePoint = new PointF();
-    protected AbstractShape target = null;
+    protected AbstractShape targetShape = null;
 
     public CanvasLayout(Context context) {
         super(context);
@@ -86,7 +90,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 toolHandleView.setShapeSnapshotListener(new ShapeSnapshotListener() {
                     @Override
                     public void onSnapshotMade() {
-                        saveSnapshot(target);
+                        saveSnapshot(targetShape);
                     }
                 });
                 addView(toolHandleView);
@@ -97,7 +101,11 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         shapes.add(shape);
     }
 
-    protected void ensureBounds(List<View> handlers, PointF delta) {
+    protected void moveShape(List<View> handlers, PointF delta) {
+        if (handlers.size() < 1) {
+            return;
+        }
+
         float minX = handlers.get(0).getX();
         float minY = handlers.get(0).getY();
         float maxX = handlers.get(0).getX();
@@ -126,7 +134,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         minY = minY + delta.y;
         maxY = maxY + delta.y;
 
-        float dx = 0.0F;
+        float dx;
 
         if (minX < 0.0F) {
             dx = delta.x - minX;
@@ -136,7 +144,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             dx = delta.x;
         }
 
-        float dy = 0.0F;
+        float dy;
 
         if (minY < 0.0F) {
             dy = delta.y - minY;
@@ -171,46 +179,47 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         }
     }
 
+    /* Moving occurs from here */
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 for (int i = 0; i < shapes.size(); i++) {
                     AbstractShape shape = shapes.get(i);
-                    if (target == null) {
+                    if (targetShape == null) {
                         if (shape.onShape(event.getX(), event.getY(), 20.0F)) {
-                            target = shape;
-                            shapes.add(0, target);
+                            targetShape = shape;
+                            shapes.add(0, targetShape);
                             shapes.remove(i + 1);
-                            target.canMove = true;
-                            target.enableSelect(true);
+                            targetShape.canMove = true;
+                            targetShape.enableSelect(true);
                             moveShapePoint.set(event.getX(), event.getY());
-                        } else if (target != shape) {
+                        } else if (targetShape != shape) {
                             shape.enableSelect(false);
                         }
                     } else {
-                        if (target.onShape(event.getX(), event.getY(), 20.0F)) {
-                            target.canMove = true;
-                            target.enableSelect(true);
+                        if (targetShape.onShape(event.getX(), event.getY(), 20.0F)) {
+                            targetShape.canMove = true;
+                            targetShape.enableSelect(true);
                             moveShapePoint.set(event.getX(), event.getY());
                         } else {
-                            target.enableSelect(false);
-                            target = null;
+                            targetShape.enableSelect(false);
+                            targetShape = null;
                         }
                     }
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (target != null && target.canMove) {
-                    ensureBounds(target.handlers,
+                if (targetShape != null && targetShape.canMove) {
+                    moveShape(targetShape.handlers,
                             new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
                     moveShapePoint.set(event.getX(), event.getY());
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (target != null) {
-                    target.canMove = false;
-                    saveSnapshot(target);
+                if (targetShape != null) {
+                    targetShape.canMove = false;
+                    saveSnapshot(targetShape);
                 }
                 break;
         }
