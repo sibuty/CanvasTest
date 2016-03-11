@@ -73,8 +73,8 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     }
 
     protected void addShape(final AbstractShape shape) {
-        for (int i = 0; i < shape.getHandlersCount(); i++) {
-            PointF point = shape.getShapePoint(i);
+        for (int i = 0; i < shape.getHandlesCount(); i++) {
+            PointF point = shape.getHandlePoint(i);
             if (point != null) {
                 ToolHandleView toolHandleView = new ToolHandleView(getContext());
                 toolHandleView.setX(point.x);
@@ -83,7 +83,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 toolHandleView.setPositionListener(new PositionListener() {
                     @Override
                     public void onPositionChanged(PointF pointF) {
-                        shape.setShapePoint(finalI, pointF);
+                        shape.setHandlePoint(finalI, pointF);
                         CanvasLayout.this.postInvalidate();
                     }
                 });
@@ -106,53 +106,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             return;
         }
 
-        float minX = handlers.get(0).getX();
-        float minY = handlers.get(0).getY();
-        float maxX = handlers.get(0).getX();
-        float maxY = handlers.get(0).getY();
-        for (View view : handlers) {
-            float x = view.getX();
-            float y = view.getY();
-            float widht = (float) view.getWidth();
-            float height = (float) view.getHeight();
-            if (x < minX) {
-                minX = x;
-            }
-            if (x + widht > maxX) {
-                maxX = x + widht;
-            }
-            if (y < minY) {
-                minY = y;
-            }
-            if (y + height > maxY) {
-                maxY = y + height;
-            }
-        }
 
-        minX = minX + delta.x;
-        maxX = maxX + delta.x;
-        minY = minY + delta.y;
-        maxY = maxY + delta.y;
-
-        float dx;
-
-        if (minX < 0.0F) {
-            dx = delta.x - minX;
-        } else if (maxX > (float) getWidth()) {
-            dx = (float) getWidth() - maxX + delta.x;
-        } else {
-            dx = delta.x;
-        }
-
-        float dy;
-
-        if (minY < 0.0F) {
-            dy = delta.y - minY;
-        } else if (maxY > (float) getHeight()) {
-            dy = (float) getHeight() - maxY + delta.y;
-        } else {
-            dy = delta.y;
-        }
 
         for (View view : handlers) {
             if (view instanceof ToolHandleView) {
@@ -160,7 +114,6 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 toolHandleView.move(new PointF(dx, dy));
             }
         }
-        CanvasLayout.this.postInvalidate();
     }
 
     protected void saveSnapshot(AbstractShape shape) {
@@ -211,8 +164,10 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (targetShape != null && targetShape.canMove) {
-                    moveShape(targetShape.handlers,
-                            new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
+                    targetShape.move(new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
+//                    moveShape(targetShape.handlers,
+//                            new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
+                    CanvasLayout.this.postInvalidate();
                     moveShapePoint.set(event.getX(), event.getY());
                 }
                 break;

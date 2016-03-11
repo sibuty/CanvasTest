@@ -31,12 +31,12 @@ public abstract class AbstractRectangleShape extends AbstractShape {
     }
 
     @Override
-    public int getHandlersCount() {
+    public int getHandlesCount() {
         return 4;
     }
 
     @Override
-    public PointF getShapePoint(final int index) {
+    public PointF getHandlePoint(final int index) {
         switch (index) {
             case 0:
                 return start;
@@ -52,7 +52,7 @@ public abstract class AbstractRectangleShape extends AbstractShape {
     }
 
     @Override
-    public void setShapePoint(final int index, final PointF value) {
+    public void setHandlePoint(final int index, final PointF value) {
         switch (index) {
             case 0:
                 start = value;
@@ -80,7 +80,7 @@ public abstract class AbstractRectangleShape extends AbstractShape {
                 break;
         }
         if (!canMove) {
-            updateHandlersPlaces();
+            updateHandlesPlaces();
         }
         setRectBounds();
     }
@@ -100,7 +100,7 @@ public abstract class AbstractRectangleShape extends AbstractShape {
     }
 
     @Override
-    protected void updateHandlersPlaces() {
+    protected void updateHandlesPlaces() {
         for (int i = 0; i < handlers.size(); i++) {
             View handle = handlers.get(i);
             if (handle instanceof ToolHandleView) {
@@ -157,7 +157,7 @@ public abstract class AbstractRectangleShape extends AbstractShape {
             this.right = rectangleShapeSnapShot.right;
             this.canMove = true;
             setRectBounds();
-            updateHandlersPlaces();
+            updateHandlesPlaces();
         }
     }
 

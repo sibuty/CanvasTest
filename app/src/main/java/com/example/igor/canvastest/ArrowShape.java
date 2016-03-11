@@ -32,7 +32,7 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    protected void updateHandlersPlaces() {
+    protected void updateHandlesPlaces() {
         for (int i = 0; i < handlers.size(); i++) {
             View handle = handlers.get(i);
             if (handle instanceof ToolHandleView) {
@@ -68,6 +68,11 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
+    public void move(PointF move) {
+
+    }
+
+    @Override
     public void draw(final Canvas canvas) {
         reset();
 
@@ -99,7 +104,7 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    public PointF getShapePoint(final int index) {
+    public PointF getHandlePoint(final int index) {
         switch (index) {
             case 0:
                 return start;
@@ -111,7 +116,7 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    public void setShapePoint(final int index, final PointF value) {
+    public void setHandlePoint(final int index, final PointF value) {
         switch (index) {
             case 0:
                 this.start = value;
@@ -123,7 +128,7 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    public int getHandlersCount() {
+    public int getHandlesCount() {
         return 2;
     }
 

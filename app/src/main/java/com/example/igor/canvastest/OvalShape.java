@@ -34,4 +34,9 @@ public class OvalShape extends AbstractRectangleShape {
         paint.setPathEffect(null);
         canvas.drawOval(rect, paint);
     }
+
+    @Override
+    public void move(PointF move) {
+
+    }
 }

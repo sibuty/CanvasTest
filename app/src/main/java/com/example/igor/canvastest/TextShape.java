@@ -73,7 +73,12 @@ public class TextShape extends AbstractShape {
     }
 
     @Override
-    protected void updateHandlersPlaces() {
+    public void move(PointF move) {
+
+    }
+
+    @Override
+    protected void updateHandlesPlaces() {
     }
 
     @Override
@@ -81,17 +86,17 @@ public class TextShape extends AbstractShape {
     }
 
     @Override
-    public PointF getShapePoint(int index) {
+    public PointF getHandlePoint(int index) {
         return null;
     }
 
     @Override
-    public void setShapePoint(int index, PointF value) {
+    public void setHandlePoint(int index, PointF value) {
 
     }
 
     @Override
-    public int getHandlersCount() {
+    public int getHandlesCount() {
         return 0;
     }
 }
