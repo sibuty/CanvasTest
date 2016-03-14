@@ -42,7 +42,7 @@ public class ArrowShape extends AbstractShape {
     @Override
     protected void onTransform(int index) {
         this.start = handlePoints.get(0);
-        this.end = handlePoints.get(0);
+        this.end = handlePoints.get(1);
         updateHandlePlaces();
     }
 
