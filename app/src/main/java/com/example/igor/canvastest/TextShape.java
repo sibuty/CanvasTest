@@ -1,32 +1,35 @@
-/*
 package com.example.igor.canvastest;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.widget.EditText;
 
-*/
 /**
  * Created by Sergey Prokofev
  * on 29.02.16
  * sergey.prokofev@altarix.ru
  * skype masterw0rks
- *//*
+ */
 
 public class TextShape extends AbstractShape {
 
-    private PointF base;
     private RectF rect;
     private String text = "kajfasdfa";
     private Paint bgRectPaint;
+    private EditText editText;
+    private boolean editing;
 
-    public TextShape(PointF base) {
+    public TextShape(Context context, PointF base) {
         super(context);
         bgRectPaint = new Paint();
-        this.base = base;
-        rect = new RectF(base.x, base.y, base.x + 100, base.y + 100);
+        this.shapePoints.add(base);
+        this.shapePoints.add(new PointF(base.x + 100, base.y + 100));
+        rect = new RectF(shapePoints.get(START).x, shapePoints.get(START).y, shapePoints.get(END).x,
+                shapePoints.get(END).y);
     }
 
     @Override
@@ -41,24 +44,28 @@ public class TextShape extends AbstractShape {
         //todo add screen density deps
         paint.setTextSize(40);
 
-//        bgRectPaint.setColor(Color.WHITE);
-//        bgRectPaint.setStyle(Paint.Style.STROKE);
+        //        bgRectPaint.setColor(Color.WHITE);
+        //        bgRectPaint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(1);
     }
 
     @Override
+    protected void onTransform(int index) {
+
+    }
+
+    @Override
     public void draw(Canvas canvas) {
-        canvas.drawText(text, base.x, base.y, paint);
+        canvas.drawText(text, shapePoints.get(START).x, shapePoints.get(START).y, paint);
         float textWidth = paint.measureText(text);
         canvas.drawRect(rect, paint);
     }
 
     @Override
     public boolean onShape(float xC, float yC, float r) {
-        */
-/* Coords are on the shape if they are inside drawn rectangle within finger raduis
-        *
-        * Copied from AbstractRectangleShape *//*
+        /** Coords are on the shape if they are inside drawn rectangle within finger raduis
+         *
+         * Copied from AbstractRectangleShape */
 
         boolean inBoundsX = (rect.left - r) <= xC && xC <= (rect.right + r);
         boolean inBoundsY = (rect.top - r) <= yC && yC <= (rect.bottom + r);
@@ -78,15 +85,6 @@ public class TextShape extends AbstractShape {
     }
 
     @Override
-    public void move(PointF move) {
-
-    }
-
-    @Override
-    protected void onTransform() {
-    }
-
-    @Override
     public void reset() {
     }
 
@@ -103,5 +101,11 @@ public class TextShape extends AbstractShape {
     public int getHandlesCount() {
         return 0;
     }
+
+    /** Enabling edit text */
+    public void onLongPress(CanvasLayout canvasLayout) {
+        editing = true;
+        canvasLayout.addView(editText, 100, 100);
+    }
 }
-*/
+
