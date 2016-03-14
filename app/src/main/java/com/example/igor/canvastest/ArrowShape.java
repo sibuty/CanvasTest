@@ -61,11 +61,6 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    public void move(PointF move) {
-
-    }
-
-    @Override
     public void draw(final Canvas canvas) {
         reset();
 
