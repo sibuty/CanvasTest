@@ -5,7 +5,6 @@ import android.graphics.*;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by glotemz on 18.02.16.
@@ -141,7 +140,7 @@ public class ArrowShape extends AbstractShape {
 
     public static class ArrowShapeSnapShot extends ShapeSnapshot {
 
-        public ArrowShapeSnapShot(final Paint paint, final List<PointF> handlePoints) {
+        public ArrowShapeSnapShot(final Paint paint, final ArrayList<PointF> handlePoints) {
             super(paint, handlePoints);
         }
     }

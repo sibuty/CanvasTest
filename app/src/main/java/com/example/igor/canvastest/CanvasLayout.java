@@ -148,7 +148,6 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                                     ToolHandleView toolHandleView = (ToolHandleView) view;
                                     toolHandleView.move(delta);
                                 }
-                                CanvasLayout.this.postInvalidate();
                             }
                         }
                     };

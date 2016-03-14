@@ -3,6 +3,10 @@ package com.example.igor.canvastest;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +27,16 @@ public class MainActivity extends AppCompatActivity {
         canvasLayout.addShape(arrowShape);
         canvasLayout.addShape(rectangleShape);
         canvasLayout.addShape(ovalShape);
+        final List<PointF> hooj = new ArrayList<>();
+        final List<PointF> hooj2 = new ArrayList<>();
+        hooj.add(new PointF(1, 1));
+        hooj2.add(new PointF(1, 1));
+        canvasLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, String.valueOf(hooj.equals(hooj2)), Toast.LENGTH_LONG);
+            }
+        }, 2000);
         //canvasLayout.addShape(textShape);
     }
 

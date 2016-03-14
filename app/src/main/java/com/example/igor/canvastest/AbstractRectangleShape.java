@@ -6,7 +6,6 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Shape based on 2 points start and end
@@ -116,7 +115,7 @@ public abstract class AbstractRectangleShape extends AbstractShape {
 
     public static class RectangleShapeSnapShot extends ShapeSnapshot {
 
-        public RectangleShapeSnapShot(final Paint paint, final List<PointF> handlePoints) {
+        public RectangleShapeSnapShot(final Paint paint, final ArrayList<PointF> handlePoints) {
             super(paint, handlePoints);
         }
     }

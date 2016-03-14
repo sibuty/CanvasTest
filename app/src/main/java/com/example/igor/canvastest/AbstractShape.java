@@ -153,8 +153,6 @@ public abstract class AbstractShape {
         }
 
         return new PointF(dx, dy);
-
-
     }
 
     public void enableSelect(final boolean enable) {
