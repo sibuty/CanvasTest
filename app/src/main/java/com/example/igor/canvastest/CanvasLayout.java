@@ -10,11 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by Igor on 17.02.2016.
@@ -85,21 +81,11 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 CanvasLayout.this.saveSnapshot(targetShape);
             }
         };
+        for (View handle : shape.handles) {
+            CanvasLayout.this.addView(handle);
+        }
         saveSnapshot(shape);
         shapes.add(shape);
-    }
-
-    protected void moveShape(List<View> handlers, PointF delta) {
-        if (handlers.size() < 1) {
-            return;
-        }
-
-        for (View view : handlers) {
-            if (view instanceof ToolHandleView) {
-                ToolHandleView toolHandleView = (ToolHandleView) view;
-                toolHandleView.move(new PointF(dx, dy));
-            }
-        }
     }
 
     protected void saveSnapshot(AbstractShape shape) {
@@ -108,7 +94,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             Map.Entry<AbstractShape, ShapeSnapshot> shapeSnapshotEntry = shapeSnapshotStack.peek();
             shapeSnapshot = shapeSnapshotEntry.getValue();
         }
-        if(shape != null) {
+        if (shape != null) {
             ShapeSnapshot targetShapeSnapshot = shape.makeSnapshot();
             if (targetShapeSnapshot != null && !targetShapeSnapshot.equals(shapeSnapshot)) {
                 shapeSnapshotStack.push(new AbstractMap.SimpleEntry<AbstractShape, ShapeSnapshot>(shape,
@@ -150,10 +136,23 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (targetShape != null && targetShape.canMove) {
-                    targetShape.move(new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
-//                    moveShape(targetShape.handles,
-//                            new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
-                    CanvasLayout.this.postInvalidate();
+                    PointF delta = targetShape.calculateDelta(
+                            new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y),
+                            new PointF((float) CanvasLayout.this.getWidth(), (float) CanvasLayout.this.getHeight())
+                    );
+                    targetShape.moveListener = new AbstractShape.MoveListener() {
+                        @Override
+                        public void onMove(final PointF delta) {
+                            for (View view : targetShape.handles) {
+                                if (view instanceof ToolHandleView) {
+                                    ToolHandleView toolHandleView = (ToolHandleView) view;
+                                    toolHandleView.move(delta);
+                                }
+                                CanvasLayout.this.postInvalidate();
+                            }
+                        }
+                    };
+                    targetShape.move(delta);
                     moveShapePoint.set(event.getX(), event.getY());
                 }
                 break;

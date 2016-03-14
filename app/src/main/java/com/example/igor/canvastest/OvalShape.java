@@ -1,5 +1,6 @@
 package com.example.igor.canvastest;
 
+import android.content.Context;
 import android.graphics.*;
 
 /**
@@ -7,8 +8,8 @@ import android.graphics.*;
  */
 public class OvalShape extends AbstractRectangleShape {
 
-    public OvalShape(PointF start, PointF end) {
-        super(start, end);
+    public OvalShape(Context context, PointF start, PointF end) {
+        super(context, start, end);
     }
 
     @Override
@@ -33,10 +34,5 @@ public class OvalShape extends AbstractRectangleShape {
         paint.setColor(Color.rgb(255, 0, 0));
         paint.setPathEffect(null);
         canvas.drawOval(rect, paint);
-    }
-
-    @Override
-    public void move(PointF move) {
-
     }
 }

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.*;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by glotemz on 18.02.16.
  */
@@ -19,6 +22,10 @@ public class ArrowShape extends AbstractShape {
         super(context);
         this.start = start;
         this.end = end;
+        this.shapePoints.add(start);
+        this.shapePoints.add(end);
+        this.handlePoints.addAll(shapePoints);
+        initHandles();
     }
 
     @Override
@@ -33,29 +40,15 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    protected void onTransform() {
-        for (int i = 0; i < handles.size(); i++) {
-            View handle = handles.get(i);
-            if (handle instanceof ToolHandleView) {
-                ToolHandleView toolHandleView = (ToolHandleView) handle;
-                switch (i) {
-                    case 0:
-                        toolHandleView.setPlace(start);
-                        break;
-                    case 1:
-                        toolHandleView.setPlace(end);
-                        break;
-                }
-            }
-        }
+    protected void onTransform(int index) {
+        this.start = handlePoints.get(0);
+        this.end = handlePoints.get(0);
+        updateHandlePlaces();
     }
 
     @Override
     public ShapeSnapshot makeSnapshot() {
-        return new ArrowShapeSnapShot(
-                new Paint(this.paint),
-                new PointF(this.start.x, this.start.y),
-                new PointF(this.end.x, this.end.y));
+        return new ArrowShapeSnapShot(new Paint(this.paint), new ArrayList<PointF>(handlePoints));
     }
 
     @Override
@@ -63,8 +56,7 @@ public class ArrowShape extends AbstractShape {
         if (shapeSnapshot instanceof ArrowShapeSnapShot) {
             ArrowShapeSnapShot rectangleShapeSnapShot = (ArrowShapeSnapShot) shapeSnapshot;
             this.paint = rectangleShapeSnapShot.paint;
-            this.start = rectangleShapeSnapShot.start;
-            this.end = rectangleShapeSnapShot.end;
+            this.handlePoints = rectangleShapeSnapShot.handlePoints;
         }
     }
 
@@ -102,29 +94,6 @@ public class ArrowShape extends AbstractShape {
         arrowPath.addPath(barbsPath);
 
         canvas.drawPath(arrowPath, paint);
-    }
-
-    @Override
-    public PointF getHandlePoint(final int index) {
-        switch (index) {
-            case 0:
-                return start;
-            case 1:
-                return end;
-            default:
-                return null;
-        }
-    }
-
-    public void setHandlePoint(final int index, final PointF value) {
-        switch (index) {
-            case 0:
-                this.start = value;
-                break;
-            case 1:
-                this.end = value;
-                break;
-        }
     }
 
     @Override
@@ -175,46 +144,10 @@ public class ArrowShape extends AbstractShape {
         }
     }
 
-    public static class ArrowShapeSnapShot implements ShapeSnapshot {
-        private Paint paint;
-        private PointF start;
-        private PointF end;
+    public static class ArrowShapeSnapShot extends ShapeSnapshot {
 
-        public ArrowShapeSnapShot(final Paint paint,
-                                  final PointF start,
-                                  final PointF end) {
-            this.paint = paint;
-            this.start = start;
-            this.end = end;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof ArrowShapeSnapShot)) {
-                return false;
-            }
-
-            final ArrowShapeSnapShot that = (ArrowShapeSnapShot) o;
-
-            if (!paint.equals(that.paint)) {
-                return false;
-            }
-            if (!start.equals(that.start)) {
-                return false;
-            }
-            return end.equals(that.end);
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = paint.hashCode();
-            result = 31 * result + start.hashCode();
-            result = 31 * result + end.hashCode();
-            return result;
+        public ArrowShapeSnapShot(final Paint paint, final List<PointF> handlePoints) {
+            super(paint, handlePoints);
         }
     }
 }

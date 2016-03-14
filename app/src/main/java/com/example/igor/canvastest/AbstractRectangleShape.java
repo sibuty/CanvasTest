@@ -4,9 +4,9 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.view.View;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Shape based on 2 points start and end
@@ -24,10 +24,11 @@ public abstract class AbstractRectangleShape extends AbstractShape {
         this.rect = new RectF();
         this.shapePoints.add(start);
         this.shapePoints.add(end);
-        setRectBounds();
         this.handlePoints.addAll(shapePoints);
         this.handlePoints.add(new PointF(end.x, start.y));
         this.handlePoints.add(new PointF(start.x, end.y));
+        setRectBounds();
+        initHandles();
     }
 
     @Override
@@ -50,15 +51,31 @@ public abstract class AbstractRectangleShape extends AbstractShape {
     }
 
     @Override
-    protected void onTransform() {
+    protected void onTransform(int index) {
         if (!canMove) {
-            for (int i = 0; i < handles.size(); i++) {
-                View handle = handles.get(i);
-                if (handle instanceof ToolHandleView) {
-                    ToolHandleView toolHandleView = (ToolHandleView) handle;
-                    toolHandleView.setPlace(handlePoints.get(i));
-                }
+            PointF start = handlePoints.get(0);
+            PointF end = handlePoints.get(1);
+            PointF right = handlePoints.get(2);
+            PointF left = handlePoints.get(3);
+            switch (index) {
+                case 0:
+                    right.y = start.y;
+                    left.x = start.x;
+                    break;
+                case 1:
+                    right.x = end.x;
+                    left.y = end.y;
+                    break;
+                case 2:
+                    end.x = right.x;
+                    start.y = right.y;
+                    break;
+                case 3:
+                    start.x = left.x;
+                    end.y = left.y;
+                    break;
             }
+            updateHandlePlaces();
         }
         setRectBounds();
     }
@@ -79,27 +96,16 @@ public abstract class AbstractRectangleShape extends AbstractShape {
 
     @Override
     public ShapeSnapshot makeSnapshot() {
-        return new RectangleShapeSnapShot(
-                new Paint(paint),
-                new PointF(start.x, start.y),
-                new PointF(end.x, end.y),
-                new PointF(left.x, left.y),
-                new PointF(right.x, right.y)
-        );
+        return new RectangleShapeSnapShot(new Paint(paint), new ArrayList<PointF>(handlePoints));
     }
 
     @Override
     public void restoreFromSnapshot(final ShapeSnapshot shapeSnapshot) {
-        if(shapeSnapshot instanceof RectangleShapeSnapShot) {
+        if (shapeSnapshot instanceof RectangleShapeSnapShot) {
             RectangleShapeSnapShot rectangleShapeSnapShot = (RectangleShapeSnapShot) shapeSnapshot;
             this.paint = rectangleShapeSnapShot.paint;
-            this.start = rectangleShapeSnapShot.start;
-            this.end = rectangleShapeSnapShot.end;
-            this.left = rectangleShapeSnapShot.left;
-            this.right = rectangleShapeSnapShot.right;
-            this.canMove = true;
-            setRectBounds();
-            onTransform();
+            this.handlePoints = rectangleShapeSnapShot.handlePoints;
+            onTransform(-1);
         }
     }
 
@@ -108,60 +114,10 @@ public abstract class AbstractRectangleShape extends AbstractShape {
         return super.calculateDelta(move, canvasBounds);
     }
 
-    public static class RectangleShapeSnapShot implements ShapeSnapshot {
-        private Paint paint;
-        private PointF start;
-        private PointF end;
-        private PointF left;
-        private PointF right;
+    public static class RectangleShapeSnapShot extends ShapeSnapshot {
 
-        public RectangleShapeSnapShot(final Paint paint,
-                                      final PointF start,
-                                      final PointF end,
-                                      final PointF left,
-                                      final PointF right) {
-            this.paint = paint;
-            this.start = start;
-            this.end = end;
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof RectangleShapeSnapShot)) {
-                return false;
-            }
-
-            final RectangleShapeSnapShot that = (RectangleShapeSnapShot) o;
-
-            if (!paint.equals(that.paint)) {
-                return false;
-            }
-            if (!start.equals(that.start)) {
-                return false;
-            }
-            if (!end.equals(that.end)) {
-                return false;
-            }
-            if (!left.equals(that.left)) {
-                return false;
-            }
-            return right.equals(that.right);
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = paint.hashCode();
-            result = 31 * result + start.hashCode();
-            result = 31 * result + end.hashCode();
-            result = 31 * result + left.hashCode();
-            result = 31 * result + right.hashCode();
-            return result;
+        public RectangleShapeSnapShot(final Paint paint, final List<PointF> handlePoints) {
+            super(paint, handlePoints);
         }
     }
 }

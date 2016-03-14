@@ -13,17 +13,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         canvasLayout =  (CanvasLayout) findViewById(R.id.main_layout);
-        AbstractShape arrowShape = new ArrowShape(new PointF(200,200), new PointF(100, 100));
+        AbstractShape arrowShape = new ArrowShape(this, new PointF(200,200), new PointF(100, 100));
         AbstractShape rectangleShape =
-                new RectangleShape(new PointF(200, 200), new PointF(400, 400));
+                new RectangleShape(this, new PointF(200, 200), new PointF(400, 400));
         AbstractShape ovalShape =
-                new OvalShape(new PointF(300, 300), new PointF(600, 400));
-        AbstractShape textShape = new TextShape(new PointF(700, 400));
+                new OvalShape(this, new PointF(300, 300), new PointF(600, 400));
+        //AbstractShape textShape = new TextShape(new PointF(700, 400));
 
         canvasLayout.addShape(arrowShape);
         canvasLayout.addShape(rectangleShape);
         canvasLayout.addShape(ovalShape);
-        canvasLayout.addShape(textShape);
+        //canvasLayout.addShape(textShape);
     }
 
     @Override

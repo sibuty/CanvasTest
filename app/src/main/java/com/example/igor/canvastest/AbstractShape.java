@@ -31,7 +31,7 @@ public abstract class AbstractShape {
     /** Points for placing handles */
     protected List<PointF> handlePoints = new ArrayList<>();
     /** Bounds of shape including all linked objects (handles, recycle bin, etc.). */
-    protected RectF bounds;
+    protected RectF bounds = new RectF();
     protected Context context;
 
     public boolean canMove = false;
@@ -44,7 +44,6 @@ public abstract class AbstractShape {
     public AbstractShape(Context context) {
         this.context = context;
         initPaint();
-        initHandles();
     }
 
     public AbstractShape(Context context,
@@ -54,7 +53,6 @@ public abstract class AbstractShape {
         this.drawCompleteListener = drawCompleteListener;
         this.shapeSnapshotListener = shapeSnapshotListener;
         initPaint();
-        initHandles();
     }
 
     protected void initHandles() {
@@ -79,69 +77,45 @@ public abstract class AbstractShape {
         }
     }
 
-    public void enableSelect(final boolean enable) {
-        this.selected = enable;
-        for (View view : handles) {
-            view.setVisibility(enable ? View.VISIBLE : View.GONE);
+    protected void updateHandlePlaces() {
+        for (int i = 0; i < handles.size(); i++) {
+            View handle = handles.get(i);
+            if (handle instanceof ToolHandleView) {
+                ToolHandleView toolHandleView = (ToolHandleView) handle;
+                toolHandleView.setPlace(handlePoints.get(i));
+            }
         }
     }
 
-    @Nullable
-    public PointF getHandlePoint(final int index) {
-        if(index >= 0 || index < handlePoints.size()) {
-            return handlePoints.get(index);
-        } else {
-            return null;
+    protected void calculateBounds(PointF move) {
+        float minX = handlePoints.get(0).x;
+        float minY = handlePoints.get(0).y;
+        float maxX = handlePoints.get(0).x;
+        float maxY = handlePoints.get(0).y;
+
+        float margin = (float) (handles.get(0).getWidth() / 2);
+
+        for (PointF handlePoint : handlePoints) {
+            float x = handlePoint.x;
+            float y = handlePoint.y;
+            if (x < minX) {
+                minX = x;
+            }
+            if (x > maxX) {
+                maxX = x;
+            }
+            if (y < minY) {
+                minY = y;
+            }
+            if (y > maxY) {
+                maxY = y;
+            }
         }
-    }
 
-    /** Used for resizing */
-    public void setHandlePoint(final int index, final PointF value) {
-        if(index >= 0 || index < handlePoints.size()) {
-            handlePoints.set(index, value);
-            onTransform();
-        }
-    }
-
-    protected abstract void initPaint();
-
-    /**
-     * Must not be implemented
-     * <p>
-     * todo Why?
-     */
-    protected abstract void onTransform();
-
-    protected abstract void calculateBounds();
-
-    public abstract void reset();
-
-    public abstract void draw(Canvas canvas);
-
-    public abstract int getHandlesCount();
-
-    /**
-     * True if xC, yC are on the shape. Used to determine whether shape is being touched to move.
-     *
-     * @param r finger radius to add into touchable area near the shape
-     */
-    public abstract boolean onShape(float xC, float yC, float r);
-
-    public abstract ShapeSnapshot makeSnapshot();
-
-    public abstract void restoreFromSnapshot(ShapeSnapshot shapeSnapshot);
-
-    /**
-     * Moving entire shape with all linked objects inside parent view
-     * <p>
-     * Should be called by event in canvas layout
-     *
-     * @param move coordinate difference to move shape to
-     */
-    public void move(PointF move) {
-        if (moveListener != null) {
-            moveListener.onMove(move);
-        }
+        bounds.left = minX + move.x - margin;
+        bounds.right = maxX + move.x + margin + 1F;
+        bounds.top = minY + move.y - margin;
+        bounds.bottom = maxY + move.y + margin + 1F;
     }
 
     /**
@@ -152,38 +126,11 @@ public abstract class AbstractShape {
      * move out from screen
      */
     protected PointF calculateDelta(PointF move, PointF canvasBounds) {
+        calculateBounds(move);
         float minX = bounds.left;
         float minY = bounds.top;
         float maxX = bounds.right;
         float maxY = bounds.bottom;
-        /*float minX = handles.get(0).getX();
-        float minY = handles.get(0).getY();
-        float maxX = handles.get(0).getX();
-        float maxY = handles.get(0).getY();
-
-        for (View view : handles) {
-            float x = view.getX();
-            float y = view.getY();
-            float widht = (float) view.getWidth();
-            float height = (float) view.getHeight();
-            if (x < minX) {
-                minX = x;
-            }
-            if (x + widht > maxX) {
-                maxX = x + widht;
-            }
-            if (y < minY) {
-                minY = y;
-            }
-            if (y + height > maxY) {
-                maxY = y + height;
-            }
-        }
-
-        minX = minX + delta.x;
-        maxX = maxX + delta.x;
-        minY = minY + delta.y;
-        maxY = maxY + delta.y;*/
 
         float dx;
 
@@ -206,5 +153,71 @@ public abstract class AbstractShape {
         }
 
         return new PointF(dx, dy);
+
+
     }
+
+    public void enableSelect(final boolean enable) {
+        this.selected = enable;
+        for (View view : handles) {
+            view.setVisibility(enable ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Nullable
+    public PointF getHandlePoint(final int index) {
+        if(index >= 0 || index < handlePoints.size()) {
+            return handlePoints.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    /** Used for resizing */
+    public void setHandlePoint(final int index, final PointF value) {
+        if(index >= 0 || index < handlePoints.size()) {
+            handlePoints.set(index, value);
+            onTransform(index);
+        }
+    }
+
+    /**
+     * Moving entire shape with all linked objects inside parent view
+     * <p>
+     * Should be called by event in canvas layout
+     *
+     * @param move coordinate difference to move shape to
+     */
+    public void move(PointF move) {
+        if (moveListener != null) {
+            moveListener.onMove(move);
+        }
+    }
+
+    protected abstract void initPaint();
+
+    /**
+     * May not be implemented
+     * <p>
+     * Be case handles was not be resize any handles
+     * @param index index point in handlePoints
+     */
+    protected abstract void onTransform(int index);
+
+    public abstract void reset();
+
+    public abstract void draw(Canvas canvas);
+
+    public abstract int getHandlesCount();
+
+    /**
+     * True if xC, yC are on the shape. Used to determine whether shape is being touched to move.
+     *
+     * @param r finger radius to add into touchable area near the shape
+     */
+    public abstract boolean onShape(float xC, float yC, float r);
+
+    public abstract ShapeSnapshot makeSnapshot();
+
+    public abstract void restoreFromSnapshot(ShapeSnapshot shapeSnapshot);
 }

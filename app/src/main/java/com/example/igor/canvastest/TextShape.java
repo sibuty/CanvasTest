@@ -1,3 +1,4 @@
+/*
 package com.example.igor.canvastest;
 
 import android.graphics.Canvas;
@@ -6,12 +7,14 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
+*/
 /**
  * Created by Sergey Prokofev
  * on 29.02.16
  * sergey.prokofev@altarix.ru
  * skype masterw0rks
- */
+ *//*
+
 public class TextShape extends AbstractShape {
 
     private PointF base;
@@ -52,9 +55,11 @@ public class TextShape extends AbstractShape {
 
     @Override
     public boolean onShape(float xC, float yC, float r) {
-        /* Coords are on the shape if they are inside drawn rectangle within finger raduis
+        */
+/* Coords are on the shape if they are inside drawn rectangle within finger raduis
         *
-        * Copied from AbstractRectangleShape */
+        * Copied from AbstractRectangleShape *//*
+
         boolean inBoundsX = (rect.left - r) <= xC && xC <= (rect.right + r);
         boolean inBoundsY = (rect.top - r) <= yC && yC <= (rect.bottom + r);
 
@@ -99,3 +104,4 @@ public class TextShape extends AbstractShape {
         return 0;
     }
 }
+*/
