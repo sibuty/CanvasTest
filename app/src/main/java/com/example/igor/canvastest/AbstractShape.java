@@ -25,6 +25,19 @@ public abstract class AbstractShape {
         void onDrawComplete();
     }
 
+    /*
+    Point shortcuts
+
+    ST__RI
+    |    |
+    |    |
+    LE__EN
+     */
+    public final int START = 0;
+    public final int END = 1;
+    public final int LEFT = 2;
+    public final int RIGHT = 3;
+
     protected boolean selected = false;
     /** Points for drawing on canvas */
     protected List<PointF> shapePoints = new ArrayList<>();
@@ -43,15 +56,6 @@ public abstract class AbstractShape {
 
     public AbstractShape(Context context) {
         this.context = context;
-        initPaint();
-    }
-
-    public AbstractShape(Context context,
-                         DrawCompleteListener drawCompleteListener,
-                         ShapeSnapshotListener shapeSnapshotListener) {
-        this.context = context;
-        this.drawCompleteListener = drawCompleteListener;
-        this.shapeSnapshotListener = shapeSnapshotListener;
         initPaint();
     }
 
@@ -88,12 +92,12 @@ public abstract class AbstractShape {
     }
 
     protected void calculateBounds(PointF move) {
-        float minX = handlePoints.get(0).x;
-        float minY = handlePoints.get(0).y;
-        float maxX = handlePoints.get(0).x;
-        float maxY = handlePoints.get(0).y;
+        float minX = shapePoints.get(START).x;
+        float minY = shapePoints.get(START).y;
+        float maxX = shapePoints.get(END).x;
+        float maxY = shapePoints.get(END).y;
 
-        float margin = (float) (handles.get(0).getWidth() / 2);
+        float margin = handles.size() > 0 ? (float) (handles.get(0).getWidth() / 2) : 10;
 
         for (PointF handlePoint : handlePoints) {
             float x = handlePoint.x;
