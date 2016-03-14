@@ -20,7 +20,7 @@ public class TextShape extends AbstractShape {
     private Paint bgRectPaint;
 
     public TextShape(PointF base) {
-        super();
+        super(context);
         bgRectPaint = new Paint();
         this.base = base;
         rect = new RectF(base.x, base.y, base.x + 100, base.y + 100);
@@ -78,7 +78,7 @@ public class TextShape extends AbstractShape {
     }
 
     @Override
-    protected void updateHandlesPlaces() {
+    protected void onTransform() {
     }
 
     @Override
@@ -90,7 +90,6 @@ public class TextShape extends AbstractShape {
         return null;
     }
 
-    @Override
     public void setHandlePoint(int index, PointF value) {
 
     }

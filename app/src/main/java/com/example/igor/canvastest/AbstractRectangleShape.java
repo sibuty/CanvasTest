@@ -1,9 +1,12 @@
 package com.example.igor.canvastest;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.View;
+
+import java.util.EnumMap;
 
 /**
  * Shape based on 2 points start and end
@@ -15,74 +18,21 @@ import android.view.View;
  */
 public abstract class AbstractRectangleShape extends AbstractShape {
     protected RectF rect;
-    protected PointF start;
-    protected PointF end;
-    protected PointF left;
-    protected PointF right;
 
-    public AbstractRectangleShape(PointF start, PointF end) {
-        super();
+    public AbstractRectangleShape(Context context, PointF start, PointF end) {
+        super(context);
         this.rect = new RectF();
-        this.start = start;
-        this.end = end;
+        this.shapePoints.add(start);
+        this.shapePoints.add(end);
         setRectBounds();
-        this.right = new PointF(end.x, start.y);
-        this.left = new PointF(start.x, end.y);
+        this.handlePoints.addAll(shapePoints);
+        this.handlePoints.add(new PointF(end.x, start.y));
+        this.handlePoints.add(new PointF(start.x, end.y));
     }
 
     @Override
     public int getHandlesCount() {
         return 4;
-    }
-
-    @Override
-    public PointF getHandlePoint(final int index) {
-        switch (index) {
-            case 0:
-                return start;
-            case 1:
-                return right;
-            case 2:
-                return end;
-            case 3:
-                return left;
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public void setHandlePoint(final int index, final PointF value) {
-        switch (index) {
-            case 0:
-                start = value;
-                right.y = start.y;
-                left.x = start.x;
-                break;
-            case 1:
-                if (!canMove) {
-                    right = value;
-                    end.x = value.x;
-                    start.y = value.y;
-                }
-                break;
-            case 2:
-                end = value;
-                right.x = end.x;
-                left.y = end.y;
-                break;
-            case 3:
-                if (!canMove) {
-                    left = value;
-                    start.x = value.x;
-                    end.y = value.y;
-                }
-                break;
-        }
-        if (!canMove) {
-            updateHandlesPlaces();
-        }
-        setRectBounds();
     }
 
     @Override
@@ -100,30 +50,22 @@ public abstract class AbstractRectangleShape extends AbstractShape {
     }
 
     @Override
-    protected void updateHandlesPlaces() {
-        for (int i = 0; i < handlers.size(); i++) {
-            View handle = handlers.get(i);
-            if (handle instanceof ToolHandleView) {
-                ToolHandleView toolHandleView = (ToolHandleView) handle;
-                switch (i) {
-                    case 0:
-                        toolHandleView.setPlace(start);
-                        break;
-                    case 1:
-                        toolHandleView.setPlace(right);
-                        break;
-                    case 2:
-                        toolHandleView.setPlace(end);
-                        break;
-                    case 3:
-                        toolHandleView.setPlace(left);
-                        break;
+    protected void onTransform() {
+        if (!canMove) {
+            for (int i = 0; i < handles.size(); i++) {
+                View handle = handles.get(i);
+                if (handle instanceof ToolHandleView) {
+                    ToolHandleView toolHandleView = (ToolHandleView) handle;
+                    toolHandleView.setPlace(handlePoints.get(i));
                 }
             }
         }
+        setRectBounds();
     }
 
     protected void setRectBounds() {
+        PointF start = handlePoints.get(0);
+        PointF end = handlePoints.get(1);
         if (start.x < end.x && start.y < end.y) {
             rect.set(start.x, start.y, end.x, end.y);
         } else if (start.x > end.x && start.y < end.y) {
@@ -157,8 +99,13 @@ public abstract class AbstractRectangleShape extends AbstractShape {
             this.right = rectangleShapeSnapShot.right;
             this.canMove = true;
             setRectBounds();
-            updateHandlesPlaces();
+            onTransform();
         }
+    }
+
+    @Override
+    protected PointF calculateDelta(PointF move, PointF canvasBounds) {
+        return super.calculateDelta(move, canvasBounds);
     }
 
     public static class RectangleShapeSnapShot implements ShapeSnapshot {

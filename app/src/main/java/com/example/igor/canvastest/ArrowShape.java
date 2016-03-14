@@ -1,5 +1,6 @@
 package com.example.igor.canvastest;
 
+import android.content.Context;
 import android.graphics.*;
 import android.view.View;
 
@@ -14,8 +15,8 @@ public class ArrowShape extends AbstractShape {
     private Path arrowPath = new Path();
     private Path barbsPath = new Path();
 
-    public ArrowShape(PointF start, PointF end) {
-        super();
+    public ArrowShape(Context context, PointF start, PointF end) {
+        super(context);
         this.start = start;
         this.end = end;
     }
@@ -32,9 +33,9 @@ public class ArrowShape extends AbstractShape {
     }
 
     @Override
-    protected void updateHandlesPlaces() {
-        for (int i = 0; i < handlers.size(); i++) {
-            View handle = handlers.get(i);
+    protected void onTransform() {
+        for (int i = 0; i < handles.size(); i++) {
+            View handle = handles.get(i);
             if (handle instanceof ToolHandleView) {
                 ToolHandleView toolHandleView = (ToolHandleView) handle;
                 switch (i) {
@@ -115,7 +116,6 @@ public class ArrowShape extends AbstractShape {
         }
     }
 
-    @Override
     public void setHandlePoint(final int index, final PointF value) {
         switch (index) {
             case 0:
@@ -170,7 +170,7 @@ public class ArrowShape extends AbstractShape {
     @Override
     public void enableSelect(final boolean enable) {
         this.selected = enable;
-        for (View view : handlers) {
+        for (View view : handles) {
             view.setVisibility(enable ? View.VISIBLE : View.GONE);
         }
     }

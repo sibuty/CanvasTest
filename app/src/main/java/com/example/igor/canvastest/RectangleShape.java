@@ -1,5 +1,6 @@
 package com.example.igor.canvastest;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,8 +11,8 @@ import android.graphics.PointF;
  */
 public class RectangleShape extends AbstractRectangleShape {
 
-    public RectangleShape(PointF start, PointF end) {
-        super(start, end);
+    public RectangleShape(Context context, PointF start, PointF end) {
+        super(context, start, end);
     }
 
     @Override

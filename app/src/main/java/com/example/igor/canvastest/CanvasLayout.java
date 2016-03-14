@@ -73,30 +73,18 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
     }
 
     protected void addShape(final AbstractShape shape) {
-        for (int i = 0; i < shape.getHandlesCount(); i++) {
-            PointF point = shape.getHandlePoint(i);
-            if (point != null) {
-                ToolHandleView toolHandleView = new ToolHandleView(getContext());
-                toolHandleView.setX(point.x);
-                toolHandleView.setY(point.y);
-                final int finalI = i;
-                toolHandleView.setPositionListener(new PositionListener() {
-                    @Override
-                    public void onPositionChanged(PointF pointF) {
-                        shape.setHandlePoint(finalI, pointF);
-                        CanvasLayout.this.postInvalidate();
-                    }
-                });
-                toolHandleView.setShapeSnapshotListener(new ShapeSnapshotListener() {
-                    @Override
-                    public void onSnapshotMade() {
-                        saveSnapshot(targetShape);
-                    }
-                });
-                addView(toolHandleView);
-                shape.handlers.add(toolHandleView);
+        shape.drawCompleteListener = new AbstractShape.DrawCompleteListener() {
+            @Override
+            public void onDrawComplete() {
+                CanvasLayout.this.postInvalidate();
             }
-        }
+        };
+        shape.shapeSnapshotListener = new ShapeSnapshotListener() {
+            @Override
+            public void onSnapshotMade() {
+                CanvasLayout.this.saveSnapshot(targetShape);
+            }
+        };
         saveSnapshot(shape);
         shapes.add(shape);
     }
@@ -105,8 +93,6 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
         if (handlers.size() < 1) {
             return;
         }
-
-
 
         for (View view : handlers) {
             if (view instanceof ToolHandleView) {
@@ -165,7 +151,7 @@ public class CanvasLayout extends FrameLayout implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 if (targetShape != null && targetShape.canMove) {
                     targetShape.move(new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
-//                    moveShape(targetShape.handlers,
+//                    moveShape(targetShape.handles,
 //                            new PointF(event.getX() - moveShapePoint.x, event.getY() - moveShapePoint.y));
                     CanvasLayout.this.postInvalidate();
                     moveShapePoint.set(event.getX(), event.getY());
