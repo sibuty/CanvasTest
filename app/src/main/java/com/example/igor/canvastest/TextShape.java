@@ -107,5 +107,11 @@ public class TextShape extends AbstractShape {
         editing = true;
         canvasLayout.addView(editText, 100, 100);
     }
+
+    @Override
+    public void move(PointF move) {
+        shapePoints.get(START).offset(move.x,move.y);
+        super.move(move);
+    }
 }
 
