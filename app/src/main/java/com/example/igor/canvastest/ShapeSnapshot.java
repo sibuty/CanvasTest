@@ -3,7 +3,7 @@ package com.example.igor.canvastest;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by glotemz on 01.03.16.
@@ -11,12 +11,12 @@ import java.util.List;
 public abstract class ShapeSnapshot {
 
     public Paint paint;
-    public List<PointF> handlePoints;
+    public ArrayList<PointF> handlePoints;
 
     public ShapeSnapshot() {
     }
 
-    public ShapeSnapshot(Paint paint, List<PointF> handlePoints) {
+    public ShapeSnapshot(Paint paint, ArrayList<PointF> handlePoints) {
         this.paint = paint;
         this.handlePoints = handlePoints;
     }
