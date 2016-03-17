@@ -6,6 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.widget.EditText;
 
 /**
@@ -17,24 +20,22 @@ import android.widget.EditText;
 
 public class TextShape extends AbstractShape {
 
-    private RectF rect;
-    private String text = "kajfasdfa";
+    private String text = "Quick brown fox jumps over a lazy dog";
     private Paint bgRectPaint;
     private EditText editText;
     private boolean editing;
+    private final int textSize = 40;
+    private RectF rect;
+    private final int margin = 5;
 
     public TextShape(Context context, PointF base) {
         super(context);
-        bgRectPaint = new Paint();
         this.shapePoints.add(base);
-        this.shapePoints.add(new PointF(base.x + 100, base.y + 100));
-        rect = new RectF(shapePoints.get(START).x, shapePoints.get(START).y, shapePoints.get(END).x,
-                shapePoints.get(END).y);
     }
 
     @Override
     public void initPaint() {
-        paint.setColor(Color.rgb(200, 100, 100));
+        paint.setColor(Color.MAGENTA);
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         paint.setDither(true);
@@ -42,11 +43,13 @@ public class TextShape extends AbstractShape {
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         //todo add screen density deps
-        paint.setTextSize(40);
-
-        //        bgRectPaint.setColor(Color.WHITE);
-        //        bgRectPaint.setStyle(Paint.Style.STROKE);
+        paint.setTextSize(textSize);
         paint.setStrokeWidth(1);
+
+        bgRectPaint = new Paint();
+        bgRectPaint.setColor(Color.MAGENTA);
+        bgRectPaint.setStyle(Paint.Style.STROKE);
+        bgRectPaint.setStrokeWidth(5);
     }
 
     @Override
@@ -56,9 +59,28 @@ public class TextShape extends AbstractShape {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawText(text, shapePoints.get(START).x, shapePoints.get(START).y, paint);
-        float textWidth = paint.measureText(text);
-        canvas.drawRect(rect, paint);
+                float textWidth = paint.measureText(text);
+        PointF start = shapePoints.get(START);
+        //        /* Triple margin at bottom for border lay lower than j,q letter tails */
+                rect = new RectF(start.x - margin, start.y - textSize - margin, start.x + textWidth + margin,
+                        start.y + 3*margin);
+        //        canvas.drawRect(rect, bgRectPaint);
+        //        canvas.drawText(text, start.x, start.y, paint);
+
+        TextPaint mTextPaint = new TextPaint();
+        mTextPaint.setDither(true);
+        mTextPaint.setColor(Color.MAGENTA);
+        mTextPaint.setTextSize(textSize);
+        StaticLayout mTextLayout =
+                new StaticLayout(text, mTextPaint, 300, Layout.Alignment.ALIGN_NORMAL,
+                        1.0f, 0.0f, false);
+
+        canvas.save();
+        // calculate x and y position where your text will be placed
+
+        canvas.translate(start.x, start.y);
+        mTextLayout.draw(canvas);
+        canvas.restore();
     }
 
     @Override

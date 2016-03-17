@@ -94,8 +94,8 @@ public abstract class AbstractShape {
     protected void calculateBounds(PointF move) {
         float minX = shapePoints.get(START).x;
         float minY = shapePoints.get(START).y;
-        float maxX = shapePoints.get(END).x;
-        float maxY = shapePoints.get(END).y;
+        float maxX = shapePoints.get(START).x;
+        float maxY = shapePoints.get(START).y;
 
         float margin = handles.size() > 0 ? (float) (handles.get(0).getWidth() / 2) : 10;
 
@@ -186,7 +186,8 @@ public abstract class AbstractShape {
     }
 
     /**
-     * Moving entire shape with all linked objects inside parent view
+     * Moving entire shape with all linked objects inside parent view. Override and apply move diff
+     * if there is no handlers in shape.
      * <p>
      * Should be called by event in canvas layout
      *
